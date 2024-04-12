@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/pages/profile.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'features/authentication/presentation/custom_sign_in_screen.dart';
+import 'package:trainer_app/routing/app_router.dart';
 import 'firebase_options.dart';
 import 'pages/input_workouts.dart';
 
@@ -45,33 +44,42 @@ Future<void> main() async {
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+   static const primaryColor = Colors.indigo;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-      final authRepository = ref.watch(authRepositoryProvider);
-    final isLoggedIn = authRepository.currentUser != null;
-    return MaterialApp(
-      title: 'Flutter Demo',
+
+      final goRouter = ref.watch(goRouterProvider);
+    return MaterialApp.router(
+      routerConfig: goRouter,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorSchemeSeed: primaryColor,
+        unselectedWidgetColor: Colors.grey,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 2.0,
+          centerTitle: true,
+        ),
+        scaffoldBackgroundColor: Colors.grey[200],
+        dividerColor: Colors.grey[400],
+        // https://github.com/firebase/flutterfire/blob/master/packages/firebase_ui_auth/doc/theming.md
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: primaryColor,
+        ),
       ),
-      home:isLoggedIn ? const MyHomePage() :  const CustomSignInScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
