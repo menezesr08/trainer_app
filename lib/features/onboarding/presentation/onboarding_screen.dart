@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trainer_app/common_widgets/primary_button.dart';
+import 'package:trainer_app/common_widgets/responsive_center.dart';
 import 'package:trainer_app/constants/app_sizes.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_controller.dart';
 import 'package:trainer_app/routing/app_router.dart';
