@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "769990493632",
+    "project_id": "trainer-app-25b10",
+    "storage_bucket": "trainer-app-25b10.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769990493632:android:a368b1aba14b208927b425",
+        "android_client_info": {
+          "package_name": "com.example.trainer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu8DXytZKUoccIGCXGtC-pENS3QpwqJWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
