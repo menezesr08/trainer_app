@@ -56,21 +56,25 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         destinations: const [
-          // products
           NavigationDestination(
-            icon: Icon(Icons.work_outline),
-            selectedIcon: Icon(Icons.work),
-            label: 'Jobs',
+            icon: Icon(Icons.fitness_center_outlined),
+            selectedIcon: Icon(Icons.fitness_center),
+            label: 'Workouts',
           ),
           NavigationDestination(
-            icon: Icon(Icons.view_headline_outlined),
-            selectedIcon: Icon(Icons.view_headline),
-            label: 'Entries',
+            icon: Icon(Icons.insights_outlined),
+            selectedIcon: Icon(Icons.insights),
+            label: 'Insights',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.leaderboard_outlined),
+            selectedIcon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outlined),
             selectedIcon: Icon(Icons.person),
-            label: 'Account',
+            label: 'Profile',
           ),
         ],
         onDestinationSelected: onDestinationSelected,

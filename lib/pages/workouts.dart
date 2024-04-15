@@ -5,8 +5,8 @@ import 'package:trainer_app/classes/workout.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 
 // need to build out firebase auth to save how many reps user did in user object
-class InputWorkouts extends ConsumerWidget {
-  InputWorkouts({super.key});
+class Workouts extends ConsumerWidget {
+  Workouts({super.key});
 
   final List<Programme> programmes = [
     Programme(programmeName: 'Push pull', day: 'Mon', workouts: [

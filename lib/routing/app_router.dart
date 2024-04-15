@@ -5,7 +5,7 @@ import 'package:trainer_app/features/authentication/data/firebase_auth_repositor
 import 'package:trainer_app/features/authentication/presentation/custom_sign_in_screen.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
-import 'package:trainer_app/pages/input_workouts.dart';
+import 'package:trainer_app/pages/workouts.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/pages/profile.dart';
@@ -17,8 +17,7 @@ import 'package:trainer_app/routing/scaffold_with_nested_navigation.dart';
 part 'app_router.g.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _inputWorkoutsNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'inputWorkouts');
+final _workoutsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'workouts');
 final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _leaderboardNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'leaderboard');
@@ -44,7 +43,7 @@ GoRouter goRouter(GoRouterRef ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       if (appStartupState.isLoading || appStartupState.hasError) {
-        return '/signIn';
+        return '/startup';
       }
 
       final onboardingRepository =
@@ -65,12 +64,12 @@ GoRouter goRouter(GoRouterRef ref) {
         if (path.startsWith('/startup') ||
             path.startsWith('/onboarding') ||
             path.startsWith('/signIn')) {
-          return '/inputWorkouts';
+          return '/workouts';
         }
       } else {
         if (path.startsWith('/startup') ||
             path.startsWith('/onboarding') ||
-            path.startsWith('/inputWorkouts') ||
+            path.startsWith('/workouts') ||
             path.startsWith('/account')) {
           return '/signIn';
         }
@@ -109,17 +108,15 @@ GoRouter goRouter(GoRouterRef ref) {
                     navigationShell: navigationShell),
               ),
           branches: [
-            StatefulShellBranch(
-                navigatorKey: _inputWorkoutsNavigatorKey,
-                routes: [
-                  GoRoute(
-                    path: '/inputWorkouts',
-                    name: AppRoute.inputWorkouts.name,
-                    pageBuilder: (context, state) => NoTransitionPage(
-                      child: InputWorkouts(),
-                    ),
-                  ),
-                ]),
+            StatefulShellBranch(navigatorKey: _workoutsNavigatorKey, routes: [
+              GoRoute(
+                path: '/workouts',
+                name: AppRoute.inputWorkouts.name,
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: Workouts(),
+                ),
+              ),
+            ]),
             StatefulShellBranch(navigatorKey: _insightsNavigatorKey, routes: [
               GoRoute(
                 path: '/insights',
