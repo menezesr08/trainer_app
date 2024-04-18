@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/presentation/custom_sign_in_screen.dart';
+import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:trainer_app/pages/workouts.dart';
@@ -22,11 +23,15 @@ final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _leaderboardNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'leaderboard');
 final _profileNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'profile');
+final _programmeNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'programme');
 
 enum AppRoute {
   onboarding,
   signIn,
   inputWorkouts,
+  programmes,
+  addProgramme,
   insights,
   leaderboard,
   profile
@@ -99,7 +104,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/signIn',
         name: AppRoute.signIn.name,
         pageBuilder: (context, state) => const NoTransitionPage(
-          child: CustomSignInScreen(),
+          child: SignInScreen(),
         ),
       ),
       StatefulShellRoute.indexedStack(
@@ -145,6 +150,23 @@ GoRouter goRouter(GoRouterRef ref) {
                   child: Profile(),
                 ),
               ),
+            ]),
+            StatefulShellBranch(navigatorKey: _programmeNavigatorKey, routes: [
+              GoRoute(
+                  path: '/programmes',
+                  name: AppRoute.programmes.name,
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: Profile(),
+                      ),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      name: AppRoute.addProgramme.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: Profile(),
+                      ),
+                    ),
+                  ]),
             ]),
           ]),
     ],

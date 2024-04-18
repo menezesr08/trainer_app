@@ -17,6 +17,7 @@ class AuthRepository {
    Future<void> signOut() {
     return _auth.signOut();
   }
+
 }
 
 @Riverpod(keepAlive: true)

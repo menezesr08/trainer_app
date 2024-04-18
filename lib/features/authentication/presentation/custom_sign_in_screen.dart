@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/constants/app_sizes.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 
-
 import 'auth_providers.dart';
 
 class CustomSignInScreen extends ConsumerWidget {
@@ -13,16 +12,15 @@ class CustomSignInScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authProviders = ref.watch(authProvidersProvider);
-  
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign in'),
       ),
       body: SignInScreen(
-              providers: authProviders,
-              footerBuilder: (context, action) =>
-                  const SignInAnonymouslyFooter(),
-            ),
+        sideBuilder: (context, constraints) => const Text("gello"),
+        providers: authProviders,
+      ),
     );
   }
 }
