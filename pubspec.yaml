@@ -49,6 +49,11 @@ dependencies:
   shared_preferences: ^2.2.3
   flutter_svg: ^2.0.10+1
   equatable: ^2.0.5
+  chat_gpt_sdk: ^2.2.5
+  flutter_dotenv: ^5.1.0
+  intl: ^0.18.1
+  url_launcher: ^6.2.4
+  youtube_player_flutter: ^9.0.1
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +82,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/time-tracking.svg
+    - assets/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

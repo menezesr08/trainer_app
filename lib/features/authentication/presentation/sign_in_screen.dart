@@ -8,7 +8,7 @@ class SignInScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dropDownState = ref.watch(dropDownStateProvider);
     final signInState = ref.watch(signInStateProvider);
-    final firebaseAuth = ref.read(firebaseAuthProvider);
+    final authProvider = ref.read(authRepositoryProvider);
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(
@@ -58,17 +58,19 @@ class SignInScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const TextField(
+                  TextField(
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16.0), // Add some vertical spacing
-                  const TextField(
+                  TextField(
+                    controller: passwordController,
                     obscureText: true, // Hide the entered text
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
                     ),
@@ -78,7 +80,7 @@ class SignInScreen extends ConsumerWidget {
                       ? DropdownButton<String>(
                           value: dropDownState.selectedOption,
                           onChanged: dropDownState.setSelectedOption,
-                          items: <String>['Trainer', 'Client']
+                          items: <String>['trainer', 'client']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -91,12 +93,13 @@ class SignInScreen extends ConsumerWidget {
                   ElevatedButton(
                     onPressed: () async {
                       signInState._selectedOption == "Login"
-                          ? await firebaseAuth.signInWithEmailAndPassword(
+                          ? await authProvider.signInWithEmailAndPassword(
                               email: emailController.text.trim(),
                               password: passwordController.text.trim())
-                          : await firebaseAuth.createUserWithEmailAndPassword(
+                          : await authProvider.createUserWithEmailAndPassword(
                               email: emailController.text.trim(),
-                              password: passwordController.text.trim());
+                              password: passwordController.text.trim(),
+                              type: dropDownState.selectedOption);
                     },
                     child: Text(signInState.selectedOption == 'Login'
                         ? 'Login'
@@ -111,12 +114,12 @@ class SignInScreen extends ConsumerWidget {
 }
 
 class DropDownState extends ChangeNotifier {
-  String _selectedOption = 'Trainer';
+  String _selectedOption = 'trainer';
 
   String get selectedOption => _selectedOption;
 
   void setSelectedOption(String? option) {
-    _selectedOption = option ?? 'Trainer';
+    _selectedOption = option ?? 'trainer';
     notifyListeners(); // Notify listeners of the change
   }
 }

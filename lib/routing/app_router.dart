@@ -6,6 +6,7 @@ import 'package:trainer_app/features/authentication/presentation/custom_sign_in_
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:trainer_app/pages/workouts.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
@@ -108,10 +109,12 @@ GoRouter goRouter(GoRouterRef ref) {
         ),
       ),
       StatefulShellRoute.indexedStack(
-          pageBuilder: (context, state, navigationShell) => NoTransitionPage(
-                child: ScaffoldWithNestedNavigation(
-                    navigationShell: navigationShell),
-              ),
+          pageBuilder: (context, state, navigationShell) {
+            return NoTransitionPage(
+              child: ScaffoldWithNestedNavigation(
+                  navigationShell: navigationShell),
+            );
+          },
           branches: [
             StatefulShellBranch(navigatorKey: _workoutsNavigatorKey, routes: [
               GoRoute(

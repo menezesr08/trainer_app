@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
+import 'package:trainer_app/features/authentication/presentation/auth_providers.dart';
+import 'package:trainer_app/features/user/data/user_repository.dart';
+import 'package:trainer_app/features/user/domain/user.dart';
 
-class ScaffoldWithNestedNavigation extends StatelessWidget {
+class ScaffoldWithNestedNavigation extends ConsumerWidget {
   const ScaffoldWithNestedNavigation({
     Key? key,
     required this.navigationShell,
@@ -19,8 +24,17 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
     );
   }
 
+  Future<User?> fetchData( WidgetRef ref) async {
+    // Simulate fetching data
+    final authRepository = ref.watch(authRepositoryProvider);
+    final userRepository = ref.read(userRepositoryProvider);
+
+    final id = authRepository.currentUser!.uid;
+    return userRepository.getUser(id);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.sizeOf(context);
     if (size.width < 450) {
       return ScaffoldWithNavigationBar(
