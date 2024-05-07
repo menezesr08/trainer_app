@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
-import 'package:trainer_app/features/authentication/presentation/auth_providers.dart';
-import 'package:trainer_app/features/user/data/user_repository.dart';
-import 'package:trainer_app/features/user/domain/user.dart';
 
 class ScaffoldWithNestedNavigation extends ConsumerWidget {
   const ScaffoldWithNestedNavigation({
@@ -23,16 +19,6 @@ class ScaffoldWithNestedNavigation extends ConsumerWidget {
       initialLocation: index == navigationShell.currentIndex,
     );
   }
-
-  Future<User?> fetchData( WidgetRef ref) async {
-    // Simulate fetching data
-    final authRepository = ref.watch(authRepositoryProvider);
-    final userRepository = ref.read(userRepositoryProvider);
-
-    final id = authRepository.currentUser!.uid;
-    return userRepository.getUser(id);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.sizeOf(context);
@@ -67,31 +53,61 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: body,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.fitness_center_outlined),
-            selectedIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
+            (Set<MaterialState> states) =>
+                states.contains(MaterialState.selected)
+                    ? const TextStyle(
+                        color: Color(0xFF797c82),
+                      )
+                    : const TextStyle(
+                        color: Color(0xFF797c82),
+                      ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.insights_outlined),
-            selectedIcon: Icon(Icons.insights),
-            label: 'Insights',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.leaderboard_outlined),
-            selectedIcon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outlined),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        onDestinationSelected: onDestinationSelected,
+        ),
+        child: NavigationBar(
+          backgroundColor: Colors.black,
+          indicatorColor: Color(0xFF797c82),
+          selectedIndex: currentIndex,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(
+                Icons.fitness_center_sharp,
+                color: Color(0xFF353d4a),
+              ),
+              selectedIcon: Icon(Icons.fitness_center),
+              label: 'Plans',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.insights_outlined,
+                color: Color(0xFF797c82),
+              ),
+              selectedIcon: Icon(Icons.insights),
+              label: 'Insights',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.leaderboard_outlined,
+                color: Color(0xFF797c82),
+              ),
+              selectedIcon: Icon(
+                Icons.leaderboard,
+              ),
+              label: 'Leaderboard',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.person_outlined,
+                color: Color(0xFF797c82),
+              ),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          onDestinationSelected: onDestinationSelected,
+        ),
       ),
     );
   }

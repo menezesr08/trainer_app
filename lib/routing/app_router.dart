@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
-import 'package:trainer_app/features/authentication/presentation/custom_sign_in_screen.dart';
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
-import 'package:trainer_app/features/user/data/user_repository.dart';
-import 'package:trainer_app/pages/workouts.dart';
+import 'package:trainer_app/features/plans/presentation/create_plan.dart';
+import 'package:trainer_app/features/plans/presentation/plan_details.dart';
+import 'package:trainer_app/features/plans/presentation/plans.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/pages/profile.dart';
@@ -19,7 +19,7 @@ import 'package:trainer_app/routing/scaffold_with_nested_navigation.dart';
 part 'app_router.g.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _workoutsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'workouts');
+final _plansNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'plans');
 final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _leaderboardNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'leaderboard');
@@ -35,7 +35,10 @@ enum AppRoute {
   addProgramme,
   insights,
   leaderboard,
-  profile
+  profile,
+  plans,
+  createPlan,
+  detail
 }
 
 @riverpod
@@ -70,12 +73,12 @@ GoRouter goRouter(GoRouterRef ref) {
         if (path.startsWith('/startup') ||
             path.startsWith('/onboarding') ||
             path.startsWith('/signIn')) {
-          return '/workouts';
+          return '/plans';
         }
       } else {
         if (path.startsWith('/startup') ||
             path.startsWith('/onboarding') ||
-            path.startsWith('/workouts') ||
+            path.startsWith('/plans') ||
             path.startsWith('/account')) {
           return '/signIn';
         }
@@ -116,13 +119,29 @@ GoRouter goRouter(GoRouterRef ref) {
             );
           },
           branches: [
-            StatefulShellBranch(navigatorKey: _workoutsNavigatorKey, routes: [
+            StatefulShellBranch(navigatorKey: _plansNavigatorKey, routes: [
               GoRoute(
-                path: '/workouts',
-                name: AppRoute.inputWorkouts.name,
-                pageBuilder: (context, state) => NoTransitionPage(
-                  child: Workouts(),
+                path: '/plans',
+                name: AppRoute.plans.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: Plans(),
                 ),
+                routes: [
+                   GoRoute(
+                      path: 'createPlan',
+                      name: AppRoute.createPlan.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: CreatePlan(),
+                      ),
+                    ),
+                      GoRoute(
+                      path: 'detail',
+                      name: AppRoute.detail.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: PlanDetails(),
+                      ),
+                    ),
+                ]
               ),
             ]),
             StatefulShellBranch(navigatorKey: _insightsNavigatorKey, routes: [
