@@ -20,7 +20,7 @@ final firestoreProvider = Provider<FirebaseFirestore>.internal(
 );
 
 typedef FirestoreRef = ProviderRef<FirebaseFirestore>;
-String _$userRepositoryHash() => r'7a0848ed3996488057eb5974babf743caf7059e9';
+String _$userRepositoryHash() => r'775f0a0cbfe43fcc5b0fbeec8ecf75a7b4fd0859';
 
 /// See also [userRepository].
 @ProviderFor(userRepository)

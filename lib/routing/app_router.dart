@@ -5,9 +5,11 @@ import 'package:trainer_app/features/authentication/data/firebase_auth_repositor
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/create_plan.dart';
 import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
+import 'package:trainer_app/features/workouts/presentation/completeWorkout.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/pages/profile.dart';
@@ -38,7 +40,8 @@ enum AppRoute {
   profile,
   plans,
   createPlan,
-  detail
+  detail,
+  completeWorkout
 }
 
 @riverpod
@@ -111,6 +114,14 @@ GoRouter goRouter(GoRouterRef ref) {
           child: SignInScreen(),
         ),
       ),
+      GoRoute(
+        path: '/completeWorkout',
+        name: AppRoute.completeWorkout.name,
+        builder: (context, state) {
+          Plan plan = state.extra as Plan; 
+          return CompleteAWorkout(plan: plan);
+        },
+      ),
       StatefulShellRoute.indexedStack(
           pageBuilder: (context, state, navigationShell) {
             return NoTransitionPage(
@@ -121,28 +132,30 @@ GoRouter goRouter(GoRouterRef ref) {
           branches: [
             StatefulShellBranch(navigatorKey: _plansNavigatorKey, routes: [
               GoRoute(
-                path: '/plans',
-                name: AppRoute.plans.name,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: Plans(),
-                ),
-                routes: [
-                   GoRoute(
+                  path: '/plans',
+                  name: AppRoute.plans.name,
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: Plans(),
+                      ),
+                  routes: [
+                    GoRoute(
                       path: 'createPlan',
                       name: AppRoute.createPlan.name,
                       pageBuilder: (context, state) => const NoTransitionPage(
                         child: CreatePlan(),
                       ),
                     ),
-                      GoRoute(
-                      path: 'detail',
+                    GoRoute(
+                      path: 'detail/:planName',
                       name: AppRoute.detail.name,
-                      pageBuilder: (context, state) => const NoTransitionPage(
-                        child: PlanDetails(),
-                      ),
+                      pageBuilder: (context, state) {
+                        final planName = state.pathParameters['planName'];
+                        return NoTransitionPage(
+                          child: PlanDetails(planName: planName!),
+                        );
+                      },
                     ),
-                ]
-              ),
+                  ]),
             ]),
             StatefulShellBranch(navigatorKey: _insightsNavigatorKey, routes: [
               GoRoute(
