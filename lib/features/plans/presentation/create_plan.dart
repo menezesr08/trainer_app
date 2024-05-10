@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/constants/colors.dart';
 import 'package:trainer_app/features/plans/presentation/plans_providers.dart';
+import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
+import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 
 class CreatePlan extends ConsumerStatefulWidget {
   const CreatePlan({super.key});
@@ -13,23 +15,27 @@ class CreatePlan extends ConsumerStatefulWidget {
 
 class _CreatePlanState extends ConsumerState<CreatePlan> {
   String _name = '';
-  String _selectedOption = '';
-  List<String> _selectedOptions = [];
-  final List<String> _options = [
-    'Chest Press',
-    'Leg Press',
-    'Split Squats',
-    'Bicep Curls',
-    'Lat Pulldown',
-    'Chest Supported Row',
-    'leg extension',
-    'Hamstring Curl',
-    'Skull crushers'
-  ];
+  BaseWorkout? _selectedOption;
+  final List<BaseWorkout> _selectedOptions = [];
+  List<BaseWorkout> _options = [];
+
   @override
+  void initState() {
+    super.initState();
+    _loadOptions();
+  }
+
+  Future<void> _loadOptions() async {
+    final workouts = ref.read(workoutsRepositoryProvider);
+    _options = await workouts.getBaseWorkouts();
+
+    setState(() {
+      // Update state variables here
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final exercisesList = ref.watch(selectedExercises);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -83,8 +89,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                           fontSize: 20),
                     ),
                     DropdownButtonFormField(
-                      value:
-                          _selectedOption.isNotEmpty ? _selectedOption : null,
+                      value: _selectedOption,
                       hint: const Text(
                         'Select an option',
                         style: TextStyle(color: textColor),
@@ -92,13 +97,13 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                       items: _options.map((option) {
                         return DropdownMenuItem(
                           value: option,
-                          child: Text(option),
+                          child: Text(option.name),
                         );
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedOption = value ?? '';
-                          _selectedOptions.add(value ?? '');
+                          _selectedOption = value;
+                          _selectedOptions.add(value!);
                         });
                       },
                     ),
@@ -112,7 +117,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                       spacing: 8.0,
                       children: _selectedOptions
                           .map((option) => Chip(
-                                label: Text(option),
+                                label: Text(option.name),
                                 deleteIcon: const Icon(Icons.clear),
                                 onDeleted: () {
                                   setState(() {
@@ -137,7 +142,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                             0xFFD3D3D3), // Change color of the Previous button
                       ),
                       onPressed: () {
-                        // Handle previous button press
+                        GoRouter.of(context).pop();
                       },
                       child: const Row(
                         children: [
@@ -161,9 +166,9 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                       ),
                       onPressed: () {
                         ref
-                            .read(selectedExercises.notifier)
+                            .read(selectedWorkoutsForPlan.notifier)
                             .update((state) => _selectedOptions);
-                        GoRouter.of(context).push('/plans/detail');
+                        GoRouter.of(context).push('/plans/detail/$_name');
                       },
                       child: const Row(
                         children: [
