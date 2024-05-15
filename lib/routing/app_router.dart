@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -53,6 +55,7 @@ GoRouter goRouter(GoRouterRef ref) {
     initialLocation: '/signIn',
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
+    extraCodec: const MyExtraCodec(),
     redirect: (context, state) {
       if (appStartupState.isLoading || appStartupState.hasError) {
         return '/startup';
@@ -118,7 +121,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/completeWorkout',
         name: AppRoute.completeWorkout.name,
         builder: (context, state) {
-          Plan plan = state.extra as Plan; 
+          Plan plan = state.extra as Plan;
           return CompleteAWorkout(plan: plan);
         },
       ),
@@ -150,8 +153,12 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.detail.name,
                       pageBuilder: (context, state) {
                         final planName = state.pathParameters['planName'];
+                        final plan = state.extra as Plan?;
                         return NoTransitionPage(
-                          child: PlanDetails(planName: planName!),
+                          child: PlanDetails(
+                            planName: planName!,
+                            plan: plan,
+                          ),
                         );
                       },
                     ),
@@ -209,4 +216,45 @@ GoRouter goRouter(GoRouterRef ref) {
       child: NotFoundScreen(),
     ),
   );
+}
+
+class MyExtraCodec extends Codec<Object?, Object?> {
+  const MyExtraCodec();
+
+  @override
+  Converter<Object?, Object?> get decoder => const _MyExtraDecoder();
+
+  @override
+  Converter<Object?, Object?> get encoder => const _MyExtraEncoder();
+}
+
+class _MyExtraDecoder extends Converter<Object?, Object?> {
+  const _MyExtraDecoder();
+
+  @override
+  Object? convert(Object? input) {
+    if (input == null) {
+      return null;
+    }
+    final List<Object?> inputAsList = input as List<Object?>;
+    if (inputAsList[0] == 'Plan') {
+      return Plan.fromMap(inputAsList[1] as Map<String, dynamic>);
+    }
+    throw FormatException('Unable to parse input: $input');
+  }
+}
+
+class _MyExtraEncoder extends Converter<Object?, Object?> {
+  const _MyExtraEncoder();
+
+  @override
+  Object? convert(Object? input) {
+    if (input == null) {
+      return null;
+    }
+    if (input is Plan) {
+      return <Object?>['Plan', input.toMap()];
+    }
+    throw FormatException('Cannot encode type ${input.runtimeType}');
+  }
 }

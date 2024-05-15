@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trainer_app/constants/colors.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
@@ -10,30 +9,22 @@ import 'package:trainer_app/routing/app_router.dart';
 class Plans extends ConsumerWidget {
   const Plans({super.key});
 
+  void deletePlan(
+    PlanRepository plansRepo,
+    int planId,
+    String userId,
+  ) {
+    plansRepo.deletePlan(planId, userId);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authRepository = ref.watch(authRepositoryProvider);
     final plansProvider = ref.watch(planRepositoryProvider);
-    final plans =
-        plansProvider.getPlansFromFirestore(authRepository.currentUser!.uid);
+    final userId = authRepository.currentUser!.uid;
+    final plans = plansProvider.getPlansFromFirestore(userId);
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF353d4a),
-          title: const Text('Plans'),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                fixedSize: const Size(50, 50),
-              ),
-              child: const Text(
-                'Log out',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () => authRepository.signOut(),
-            ),
-          ],
-        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             GoRouter.of(context).go('/plans/createPlan');
@@ -44,8 +35,8 @@ class Plans extends ConsumerWidget {
           ),
           child: const Icon(Icons.add),
         ),
-        body: FutureBuilder<List<Plan>>(
-          future: plans,
+        body: StreamBuilder<List<Plan>>(
+          stream: plans,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -54,87 +45,135 @@ class Plans extends ConsumerWidget {
             } else {
               List<Plan> plans = snapshot.data!;
               return SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  color: Colors.black,
-                  child: Column(
-                    children: plans.map((plan) {
-                      return GestureDetector(
-                          onTap: () {
-                            GoRouter.of(context).pushNamed(
-                                AppRoute.completeWorkout.name,
-                                extra: plan);
-                          },
-                          child: planCard(plan));
-                    }).toList(),
+                child: Column(children: [
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
+                  const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text(
+                          'Your Plans',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(Icons.search),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ...plans
+                      .map((e) => PlanCard(
+                          plan: e,
+                          onDelete: () =>
+                              plansProvider.deletePlan(e.id, userId)))
+                      .toList(),
+                ]),
               );
             }
           },
         ));
   }
+}
 
-  Widget planCard(Plan plan) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        color: textColor,
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(10)),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      plan.name,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ...[
-                      for (var w in plan.workouts) ...[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              w.name,
-                              style: const TextStyle(fontSize: 25),
-                            ),
-                            Text(
-                              '${w.reps.toString()} reps',
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                            Text(
-                              '${w.sets.toString()} sets X ${w.weight.toString()}kg',
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                            width: 8), // Add desired space between Text widgets
-                      ],
+class PlanCard extends StatelessWidget {
+  const PlanCard({super.key, required this.onDelete, required this.plan});
+  final VoidCallback onDelete;
+  final Plan plan;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          GoRouter.of(context)
+              .pushNamed(AppRoute.completeWorkout.name, extra: plan);
+        },
+        onLongPress: () {
+          // Show a bottom sheet with edit and delete options
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      GoRouter.of(context).pop();
+                      GoRouter.of(context).push(
+                        '/plans/detail/${plan.name}',
+                        extra: plan,
+                      );
+                    },
+                    child: const Text('Edit'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      onDelete();
+                      Navigator.pop(context); // Close the bottom sheet
+                      // Implement delete functionality
+                    },
+                    child: const Text('Delete'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.purple.withOpacity(0.9),
+                      Colors.black.withOpacity(0.9), // Adjust opacity as needed
+                      // Adjust opacity as needed
                     ],
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ]),
-            )
-          ],
+                    stops: const [0.0, 0.7],
+                  ),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                        leading: const Icon(
+                          Icons.fitness_center,
+                          color: Colors.white,
+                          size: 50,
+                        ),
+                        title: Text(
+                          '${plan.workouts.length} exercises',
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          plan.name,
+                          style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ],
+                ),
+              )),
         ),
       ),
     );

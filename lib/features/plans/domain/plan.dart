@@ -2,11 +2,12 @@ import 'package:equatable/equatable.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 class Plan extends Equatable {
-  const Plan({required this.name, required this.workouts});
+  const Plan({required this.id, required this.name, required this.workouts});
   final String name;
   final List<Workout> workouts;
+  final int id;
   @override
-  List<Object> get props => [name, workouts];
+  List<Object> get props => [id, name, workouts];
 
   @override
   bool get stringify => true;
@@ -21,7 +22,10 @@ class Plan extends Equatable {
         .map((workoutData) => Workout.fromMap(workoutData))
         .toList();
 
+    final id = data['id'] as int;
+
     return Plan(
+      id: id,
       name: name,
       workouts: workouts,
     );
@@ -29,6 +33,7 @@ class Plan extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'workouts': workouts.map((workout) => workout.toMap()).toList()
     };

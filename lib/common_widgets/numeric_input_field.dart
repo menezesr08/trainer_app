@@ -3,13 +3,24 @@ import 'package:flutter/services.dart';
 
 class NumericInputField extends StatelessWidget {
   final void Function(String) callback;
-  const NumericInputField({super.key, required this.callback});
+  final TextEditingController controller;
+  const NumericInputField(
+      {super.key, required this.callback, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      decoration: const InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 0),
+      controller: controller,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white, // Set background color to white
+        border: OutlineInputBorder(
+          // Add border
+          borderSide: const BorderSide(color: Colors.purple), // Border color
+          borderRadius: BorderRadius.circular(8.0), // Border radius
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 10.0), // Optional: Adjust padding
       ),
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.number,

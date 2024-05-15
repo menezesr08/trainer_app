@@ -1,6 +1,5 @@
 import 'package:trainer_app/features/workouts/domain/set.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
-import 'package:trainer_app/pages/workouts.dart';
 
 extension CopyWithPropertyExtension on Workout {
   Workout copyWithProperty(String propertyName, dynamic value) {

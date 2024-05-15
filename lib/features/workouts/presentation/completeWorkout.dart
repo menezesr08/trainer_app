@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trainer_app/common_widgets/numeric_input_field.dart';
 import 'package:trainer_app/constants/colors.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
@@ -95,26 +96,49 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
       ]),
       body: SingleChildScrollView(
         child: Column(
-          children: widget.plan.workouts.map((w) {
-            return InputWorkout(
-              w: w,
-            );
-          }).toList(),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 40,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                'Complete your workout!',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            ...widget.plan.workouts.map((w) {
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  WorkoutCard(
+                    w: w,
+                  ),
+                ],
+              );
+            }).toList(),
+          ],
         ),
       ),
     );
   }
 }
 
-class InputWorkout extends ConsumerStatefulWidget {
-  const InputWorkout({super.key, required this.w});
+class WorkoutCard extends ConsumerStatefulWidget {
+  const WorkoutCard({super.key, required this.w});
   final Workout w;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InputWorkoutState();
 }
 
-class _InputWorkoutState extends ConsumerState<InputWorkout> {
+class _InputWorkoutState extends ConsumerState<WorkoutCard> {
   int reps = 0;
   int weight = 0;
   void updateSetProperty(
@@ -141,100 +165,51 @@ class _InputWorkoutState extends ConsumerState<InputWorkout> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
       child: Container(
-        color: textColor,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.purple.withOpacity(0.9),
+              Colors.black.withOpacity(0.9), // Adjust opacity as needed
+              // Adjust opacity as needed
+            ],
+            stops: const [0.0, 0.5],
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
         child: Column(
           children: [
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(20)),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      widget.w.name,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        widget.w.name,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     ...[
                       for (var i = 0; i < widget.w.sets; i++)
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text('Set ${i + 1}: '),
-                              SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 0),
-                                  ),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      reps = int.tryParse(value) ?? 0;
-                                      updateSetProperty(
-                                        i,
-                                        widget.w.id,
-                                        'reps',
-                                        reps,
-                                      );
-                                    });
-                                  },
-                                ),
-                              ),
-                              const Text('Reps'),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 0),
-                                  ),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      weight = int.tryParse(value) ?? 0;
-                                      updateSetProperty(
-                                        i,
-                                        widget.w.id,
-                                        'weight',
-                                        weight,
-                                      );
-                                    });
-                                  },
-                                ),
-                              ),
-                              const Text('Weight'),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                            ]),
+                        WorkoutRow(setNumber: i + 1, w: widget.w)
                     ],
                     const SizedBox(
                       height: 20,
@@ -245,5 +220,131 @@ class _InputWorkoutState extends ConsumerState<InputWorkout> {
         ),
       ),
     );
+  }
+}
+
+class WorkoutRow extends ConsumerStatefulWidget {
+  const WorkoutRow({super.key, required this.setNumber, required this.w});
+  final int setNumber;
+  final Workout w;
+
+  @override
+  ConsumerState<WorkoutRow> createState() => _ConsumerWorkoutRowState();
+}
+
+class _ConsumerWorkoutRowState extends ConsumerState<WorkoutRow> {
+  final TextEditingController _repsController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+
+  int reps = 0;
+  int weight = 0;
+  void updateSetProperty(
+      int setNumber, int workoutId, String propertyName, dynamic value) {
+    ref.read(completedWorkoutProvider.notifier).update((state) {
+      return state.map((completedWorkout) {
+        if (completedWorkout.workoutId == workoutId) {
+          final updatedSets = completedWorkout.workoutSets
+              .map((set) {
+                if (set.number == setNumber) {
+                  return set.copyWithProperty(propertyName, value);
+                } else {
+                  return set;
+                }
+              })
+              .whereType<WorkoutSet>()
+              .toList();
+          return completedWorkout.copyWith(workoutSets: updatedSets);
+        }
+        return completedWorkout;
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+      const SizedBox(
+        width: 8,
+      ),
+      Text(
+        '${widget.setNumber}',
+        style: const TextStyle(color: Colors.white),
+      ),
+      const SizedBox(
+        width: 18,
+      ),
+      SizedBox(
+        width: 48,
+        height: 50,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.purple.withOpacity(0.9), width: 2),
+            borderRadius:
+                BorderRadius.circular(8.0), // Optional: Add rounded corners
+          ),
+          child: NumericInputField(
+            controller: _repsController,
+            callback: (value) {
+              setState(() {
+                reps = int.tryParse(value) ?? 0;
+                updateSetProperty(
+                  widget.setNumber,
+                  widget.w.id,
+                  'reps',
+                  reps,
+                );
+              });
+            },
+          ),
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      const Text(
+        'Reps',
+        style: TextStyle(
+            color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      SizedBox(
+        width: 48,
+        height: 50,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.purple.withOpacity(0.9), width: 2),
+            borderRadius:
+                BorderRadius.circular(8.0), // Optional: Add rounded corners
+          ),
+          child: NumericInputField(
+            controller: _weightController,
+            callback: (value) {
+              setState(() {
+                weight = int.tryParse(value) ?? 0;
+                updateSetProperty(
+                  widget.setNumber,
+                  widget.w.id,
+                  'weight',
+                  weight,
+                );
+              });
+            },
+          ),
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      const Text(
+        'Weight',
+        style: TextStyle(
+            color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+    ]);
   }
 }

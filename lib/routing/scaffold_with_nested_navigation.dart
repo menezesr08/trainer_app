@@ -19,6 +19,7 @@ class ScaffoldWithNestedNavigation extends ConsumerWidget {
       initialLocation: index == navigationShell.currentIndex,
     );
   }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.sizeOf(context);
@@ -59,7 +60,8 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
             (Set<MaterialState> states) =>
                 states.contains(MaterialState.selected)
                     ? const TextStyle(
-                        color: Color(0xFF797c82),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       )
                     : const TextStyle(
                         color: Color(0xFF797c82),
@@ -67,14 +69,13 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
           ),
         ),
         child: NavigationBar(
-          backgroundColor: Colors.black,
-          indicatorColor: Color(0xFF797c82),
+          backgroundColor: Colors.white,
           selectedIndex: currentIndex,
           destinations: const [
             NavigationDestination(
               icon: Icon(
                 Icons.fitness_center_sharp,
-                color: Color(0xFF353d4a),
+                color: Color(0xFF797c82),
               ),
               selectedIcon: Icon(Icons.fitness_center),
               label: 'Plans',

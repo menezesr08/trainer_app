@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
+import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 part 'plan_repository.g.dart';
 
@@ -9,13 +10,22 @@ class PlanRepository {
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
-  void addPlanToFirestore(String userId, Plan plan) async {
+  void addPlanToFirestore(int? planId, String userId, String planName,
+      List<Workout> workoutsToSave) async {
+    final id = planId ?? await generateUniqueId();
+
+    Plan newOrUpdatedPlan = Plan(
+      id: id,
+      name: planName,
+      workouts: workoutsToSave,
+    );
     try {
       await _firestore
           .collection('users')
           .doc(userId)
           .collection('plans')
-          .add(plan.toMap());
+          .doc(newOrUpdatedPlan.id.toString())
+          .set(newOrUpdatedPlan.toMap());
 
       print('Plan added to Firestore successfully.');
     } catch (error) {
@@ -23,30 +33,63 @@ class PlanRepository {
     }
   }
 
-  Future<List<Plan>> getPlansFromFirestore(String userId) async {
+  void deletePlan(int planId, String userId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('plans')
+          .doc(planId.toString())
+          .delete();
+
+      print('Plan deleted');
+    } catch (error) {
+      print('Error delete plan to Firestore: $error');
+    }
+  }
+
+  Future<int> generateUniqueId() async {
+    final CollectionReference idCounterRef =
+        _firestore.collection('plan_id_counter');
+    // Get current ID counter document
+    DocumentSnapshot docSnapshot = await idCounterRef.doc('counter').get();
+
+    int lastId = 0;
+
+    if (docSnapshot.exists) {
+      Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+      lastId = data['last_id'] ?? 0;
+    }
+
+    int newId = lastId + 1;
+
+    // Update ID counter document with new ID
+    await idCounterRef.doc('counter').set({'last_id': newId});
+
+    return newId;
+  }
+
+  Stream<List<Plan>> getPlansFromFirestore(String userId) {
     try {
       // Get the Firestore instance
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Query the user's plans collection
-      QuerySnapshot querySnapshot = await firestore
+      // Query the user's plans collection and listen for real-time updates
+      return firestore
           .collection('users')
           .doc(userId)
           .collection('plans')
-          .get();
-
-      // Extract plans from the query snapshot
-      List<Plan> plans = querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Plan.fromMap(data);
-      }).toList();
-
-      print(plans.length);
-
-      return plans;
+          .snapshots()
+          .map((querySnapshot) {
+        // Extract plans from the query snapshot
+        return querySnapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return Plan.fromMap(data);
+        }).toList();
+      });
     } catch (error) {
       print(error.toString());
-      return [];
+      return Stream.value([]); // Return an empty stream in case of error
     }
   }
 }

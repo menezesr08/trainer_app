@@ -48,7 +48,7 @@ class WorkoutsRepository {
 
   Future<int> generateUniqueId() async {
     final CollectionReference idCounterRef =
-        _firestore.collection('id_counter');
+        _firestore.collection('workout_id_counter');
     // Get current ID counter document
     DocumentSnapshot docSnapshot = await idCounterRef.doc('counter').get();
 
