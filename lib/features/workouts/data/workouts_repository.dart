@@ -66,6 +66,31 @@ class WorkoutsRepository {
 
     return newId;
   }
+
+  Stream<List<CompletedWorkout>> getCompletedWorkoutsFromFirestore(
+      String userId) {
+    try {
+      // Get the Firestore instance
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Query the user's plans collection and listen for real-time updates
+      return firestore
+          .collection('users')
+          .doc(userId)
+          .collection('completedWorkouts')
+          .snapshots()
+          .map((querySnapshot) {
+        // Extract plans from the query snapshot
+        return querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          return CompletedWorkout.fromMap(data);
+        }).toList();
+      });
+    } catch (error) {
+      print(error.toString());
+      return Stream.value([]); // Return an empty stream in case of error
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)

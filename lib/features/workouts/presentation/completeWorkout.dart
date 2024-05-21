@@ -63,7 +63,12 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
         workoutSets.add(WorkoutSet(number: i, reps: 0, weight: 0));
       }
       completedWorkouts.add(
-        CompletedWorkout(id: id, workoutId: w.id, workoutSets: workoutSets),
+        CompletedWorkout(
+          id: id,
+          workoutId: w.id,
+          workoutSets: workoutSets,
+          name: w.name,
+        ),
       );
     });
 

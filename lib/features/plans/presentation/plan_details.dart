@@ -74,67 +74,68 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
         child: Scaffold(
           body: Container(
             color: Colors.white,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                const Text(
-                  'Fill in what your sessions look like',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                ...workouts.map((element) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      ExerciseInput(
-                        workout: element,
-                      ),
-                    ],
-                  );
-                }).toList(),
-                const Spacer(),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          GoRouter.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: 30,
+                  const Text(
+                    'Fill in what your sessions look like',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  ...workouts.map((element) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        ExerciseInput(
+                          workout: element,
                         ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          savePlanToFirestore();
-                          ref
-                              .read(updatedWorkoutsForPlan.notifier)
-                              .update((state) => []);
+                      ],
+                    );
+                  }).toList(),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            GoRouter.of(context).pop();
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            savePlanToFirestore();
+                            ref
+                                .read(updatedWorkoutsForPlan.notifier)
+                                .update((state) => []);
 
-                          Future.delayed(Duration.zero, () {
-                            GoRouter.of(context).go('/plans');
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.check,
-                          color: Colors.black,
-                          size: 30,
+                            Future.delayed(Duration.zero, () {
+                              GoRouter.of(context).go('/plans');
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.check,
+                            color: Colors.black,
+                            size: 30,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

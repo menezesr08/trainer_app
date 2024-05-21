@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
@@ -93,6 +94,11 @@ class PlanRepository {
     }
   }
 }
+
+final getPlansStream = StreamProvider.autoDispose.family<List<Plan>, String>((ref, userId) {
+  final plans = ref.watch(planRepositoryProvider);
+  return plans.getPlansFromFirestore(userId);
+});
 
 @Riverpod(keepAlive: true)
 PlanRepository planRepository(PlanRepositoryRef ref) {

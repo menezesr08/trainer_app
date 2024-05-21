@@ -5,12 +5,16 @@ class CompletedWorkout extends Equatable {
   final List<WorkoutSet> workoutSets;
   final int workoutId;
   final int id;
+  final String name;
 
   const CompletedWorkout(
-      {required this.workoutSets, required this.workoutId, required this.id});
+      {required this.workoutSets,
+      required this.workoutId,
+      required this.id,
+      required this.name});
 
   @override
-  List<Object> get props => [id, workoutSets, workoutId];
+  List<Object> get props => [id, workoutSets, workoutId, name];
 
   int get totalReps {
     return workoutSets.fold(0, (total, set) => total + set.reps);
@@ -34,7 +38,14 @@ class CompletedWorkout extends Equatable {
 
     final int id = data['id'] as int;
 
-    return CompletedWorkout(id: id, workoutSets: sets, workoutId: workoutId);
+    final String name = data['name'] as String;
+
+    return CompletedWorkout(
+      id: id,
+      workoutSets: sets,
+      workoutId: workoutId,
+      name: name,
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -42,6 +53,7 @@ class CompletedWorkout extends Equatable {
       'sets': workoutSets.map((set) => set.toMap()).toList(),
       'workoutId': workoutId,
       'id': id,
+      'name': name
     };
   }
 
@@ -49,10 +61,12 @@ class CompletedWorkout extends Equatable {
     int? workoutId,
     List<WorkoutSet>? workoutSets,
     int? id,
+    String? name
   }) {
     return CompletedWorkout(
         workoutId: workoutId ?? this.workoutId,
         workoutSets: workoutSets ?? this.workoutSets,
+        name: name ?? this.name,
         id: id ?? this.id);
   }
 }

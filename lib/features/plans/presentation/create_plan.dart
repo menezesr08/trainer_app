@@ -56,7 +56,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                         8.0), // Optional: Add rounded corners
                   ),
                   child: TextField(
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -100,11 +100,11 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                           fontWeight: FontWeight.bold,
                           fontSize: 20),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         border: Border.all(
                             color: Colors.purple.withOpacity(0.9), width: 3),
@@ -131,7 +131,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                         },
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     const Text(
@@ -145,7 +145,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                       children: _selectedOptions
                           .map((option) => Chip(
                                 backgroundColor: Colors.purple.withOpacity(0.9),
-                                labelStyle: TextStyle(color: Colors.white),
+                                labelStyle: const TextStyle(color: Colors.white),
                                 label: Text(option.name),
                                 deleteIcon: const Icon(Icons.clear),
                                 onDeleted: () {
@@ -170,7 +170,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                       onPressed: () {
                         GoRouter.of(context).pop();
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back,
                         color: Colors.black,
                         size: 30,
@@ -184,7 +184,7 @@ class _CreatePlanState extends ConsumerState<CreatePlan> {
                             .update((state) => _selectedOptions);
                         GoRouter.of(context).push('/plans/detail/$_name');
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_forward,
                         color: Colors.black,
                         size: 30,
