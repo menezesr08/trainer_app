@@ -11,10 +11,11 @@ import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/create_plan.dart';
 import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
+import 'package:trainer_app/features/profile/presentation/completed_workouts_list.dart';
 import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
-import 'package:trainer_app/pages/profile.dart';
+import 'package:trainer_app/features/profile/presentation/profile.dart';
 import 'package:trainer_app/routing/app_startup.dart';
 import 'package:trainer_app/routing/go_router_refresh_stream.dart';
 import 'package:trainer_app/routing/not_found_screen.dart';
@@ -43,7 +44,8 @@ enum AppRoute {
   plans,
   createPlan,
   detail,
-  completeWorkout
+  completeWorkout,
+  completedWorkouts
 }
 
 @riverpod
@@ -186,12 +188,20 @@ GoRouter goRouter(GoRouterRef ref) {
                 ]),
             StatefulShellBranch(navigatorKey: _profileNavigatorKey, routes: [
               GoRoute(
-                path: '/profile',
-                name: AppRoute.profile.name,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: Profile(),
-                ),
-              ),
+                  path: '/profile',
+                  name: AppRoute.profile.name,
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: Profile(),
+                      ),
+                  routes: [
+                    GoRoute(
+                      path: 'completedWorkouts',
+                      name: AppRoute.completedWorkouts.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: CompletedWorkoutsList(),
+                      ),
+                    ),
+                  ]),
             ]),
             StatefulShellBranch(navigatorKey: _programmeNavigatorKey, routes: [
               GoRoute(

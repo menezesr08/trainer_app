@@ -7,16 +7,19 @@ class CompletedWorkout extends Equatable {
   final int id;
   final String name;
   final DateTime completedAt;
+  final String planName;
 
   const CompletedWorkout(
       {required this.workoutSets,
       required this.workoutId,
       required this.id,
       required this.name,
-      required this.completedAt});
+      required this.completedAt,
+      required this.planName,
+      });
 
   @override
-  List<Object> get props => [id, workoutSets, workoutId, name, completedAt];
+  List<Object> get props => [id, workoutSets, workoutId, name, completedAt, planName];
 
   int get totalReps {
     return workoutSets.fold(0, (total, set) => total + set.reps);
@@ -44,12 +47,16 @@ class CompletedWorkout extends Equatable {
     final String completedAtString = data['completed_at'] as String;
     final DateTime completedAt = DateTime.parse(completedAtString);
 
+   final String planName = data['plan_name'] as String;
+
     return CompletedWorkout(
         id: id,
         workoutSets: sets,
         workoutId: workoutId,
         name: name,
-        completedAt: completedAt);
+        completedAt: completedAt,
+        planName: planName
+        );
   }
 
   Map<String, dynamic> toMap() {
@@ -58,7 +65,8 @@ class CompletedWorkout extends Equatable {
       'workoutId': workoutId,
       'id': id,
       'name': name,
-      'completed_at': completedAt.toIso8601String()
+      'completed_at': completedAt.toIso8601String(),
+      'plan_name' : planName
     };
   }
 
@@ -67,12 +75,16 @@ class CompletedWorkout extends Equatable {
       List<WorkoutSet>? workoutSets,
       int? id,
       String? name,
-      DateTime? completedAt}) {
+      DateTime? completedAt,
+      String? planName
+      }) {
     return CompletedWorkout(
         workoutId: workoutId ?? this.workoutId,
         workoutSets: workoutSets ?? this.workoutSets,
         name: name ?? this.name,
         completedAt: completedAt ?? this.completedAt,
-        id: id ?? this.id);
+        id: id ?? this.id,
+        planName: planName ?? this.planName
+        );
   }
 }

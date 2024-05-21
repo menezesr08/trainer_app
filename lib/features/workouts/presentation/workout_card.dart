@@ -98,3 +98,4 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
     );
   }
 }
+

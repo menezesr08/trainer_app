@@ -65,7 +65,9 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
             workoutId: w.id,
             workoutSets: workoutSets,
             name: w.name,
-            completedAt: DateTime.now()),
+            completedAt: DateTime.now(),
+            planName: widget.plan.name
+            ),
       );
     });
 
