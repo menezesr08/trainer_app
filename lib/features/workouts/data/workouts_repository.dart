@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/completed_workout.dart';
+import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 part 'workouts_repository.g.dart';
 
@@ -92,6 +93,11 @@ class WorkoutsRepository {
     }
   }
 }
+
+final baseWorkoutsProvider = FutureProvider<List<BaseWorkout>>((ref) async {
+  final workoutsRepository = ref.read(workoutsRepositoryProvider);
+  return workoutsRepository.getBaseWorkouts();
+});
 
 @Riverpod(keepAlive: true)
 WorkoutsRepository workoutsRepository(WorkoutsRepositoryRef ref) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trainer_app/common_widgets/option_row.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -24,52 +25,16 @@ class Profile extends StatelessWidget {
                   ),
                 ),
               ),
-              Spacer(),
-              Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Icon(Icons.search),
-              )
             ],
           ),
           const SizedBox(
             height: 30,
           ),
-          GestureDetector(
-            onTap: () {
+          OptionRow(
+            title: 'Completed Workouts',
+            onTapped: () {
               GoRouter.of(context).push('/profile/completedWorkouts');
             },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              padding: const EdgeInsets.only(top: 0, left: 10),
-              height: 60,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.purple.withOpacity(0.9),
-                    Colors.black.withOpacity(0.9),
-                  ],
-                  stops: const [0.0, 0.7],
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-              ),
-              child: const Row(
-                children: [
-                  Text(
-                    'Completed Workouts',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.chevron_right,
-                    size: 35,
-                    color: Colors.white,
-                  )
-                ],
-              ),
-            ),
           )
         ],
       ),
