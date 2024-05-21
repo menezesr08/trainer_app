@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
+import 'package:trainer_app/features/insights/presentation/individual_workout_insights.dart';
 import 'package:trainer_app/features/insights/presentation/individual_workout_options.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
@@ -13,6 +14,7 @@ import 'package:trainer_app/features/plans/presentation/create_plan.dart';
 import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
 import 'package:trainer_app/features/profile/presentation/completed_workouts_list.dart';
+import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
 import 'package:trainer_app/features/insights/presentation/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
@@ -47,7 +49,8 @@ enum AppRoute {
   detail,
   completeWorkout,
   completedWorkouts,
-  individualWorkoutOptions
+  individualWorkoutOptions,
+  individualWorkoutInsights
 }
 
 @riverpod
@@ -183,6 +186,15 @@ GoRouter goRouter(GoRouterRef ref) {
                         child: IndividualWorkoutOptions(),
                       ),
                     ),
+                    GoRoute(
+                      path: 'individualWorkoutInsights',
+                      name: AppRoute.individualWorkoutInsights.name,
+                      pageBuilder: (context, state) {
+                        final baseWorkout = state.extra as BaseWorkout?;
+                        return NoTransitionPage(
+                            child: IndividualWorkoutInsights(w: baseWorkout!));
+                      },
+                    ),
                   ]),
             ]),
             StatefulShellBranch(
@@ -274,6 +286,10 @@ class _MyExtraEncoder extends Converter<Object?, Object?> {
     }
     if (input is Plan) {
       return <Object?>['Plan', input.toMap()];
+    }
+
+     if (input is BaseWorkout) {
+      return <Object?>['BaseWorkout', input.toMap()];
     }
     throw FormatException('Cannot encode type ${input.runtimeType}');
   }

@@ -38,7 +38,12 @@ class IndividualWorkoutOptions extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 15),
                 child: OptionRow(
                   title: e.name,
-                  onTapped: () {},
+                  onTapped: () {
+                    GoRouter.of(context).push(
+                      '/insights/individualWorkoutInsights',
+                      extra: e,
+                    );
+                  },
                 ),
               ))
         ]);

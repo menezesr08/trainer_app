@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trainer_app/features/insights/presentation/graph.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 
 class IndividualWorkoutInsights extends ConsumerStatefulWidget {
@@ -15,18 +16,22 @@ class _ConsumerIndividualWorkoutInsightsState
     extends ConsumerState<IndividualWorkoutInsights> {
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
+        const SizedBox(
+          height: 50,
+        ),
         Padding(
-          padding: EdgeInsets.only(left: 10),
+          padding: const EdgeInsets.only(left: 10),
           child: Text(
-            'Choose a workout',
-            style: TextStyle(
+            widget.w.name,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 30,
             ),
           ),
         ),
+        LineChartSample2()
       ],
     );
   }
