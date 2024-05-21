@@ -11,7 +11,7 @@ import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/create_plan.dart';
 import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
-import 'package:trainer_app/features/workouts/presentation/completeWorkout.dart';
+import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
 import 'package:trainer_app/pages/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/pages/profile.dart';
