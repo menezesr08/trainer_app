@@ -85,7 +85,7 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
                     ),
                     ...[
                       for (var i = 0; i < widget.w.sets; i++)
-                        WorkoutRow(setNumber: i + 1, w: widget.w)
+                        WorkoutRow(setNumber: i, w: widget.w)
                     ],
                     const SizedBox(
                       height: 20,
@@ -98,4 +98,3 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
     );
   }
 }
-

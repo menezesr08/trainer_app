@@ -61,11 +61,11 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
       }
       completedWorkouts.add(
         CompletedWorkout(
-          id: id,
-          workoutId: w.id,
-          workoutSets: workoutSets,
-          name: w.name,
-        ),
+            id: id,
+            workoutId: w.id,
+            workoutSets: workoutSets,
+            name: w.name,
+            completedAt: DateTime.now()),
       );
     });
 
@@ -131,4 +131,3 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
     );
   }
 }
-

@@ -6,15 +6,17 @@ class CompletedWorkout extends Equatable {
   final int workoutId;
   final int id;
   final String name;
+  final DateTime completedAt;
 
   const CompletedWorkout(
       {required this.workoutSets,
       required this.workoutId,
       required this.id,
-      required this.name});
+      required this.name,
+      required this.completedAt});
 
   @override
-  List<Object> get props => [id, workoutSets, workoutId, name];
+  List<Object> get props => [id, workoutSets, workoutId, name, completedAt];
 
   int get totalReps {
     return workoutSets.fold(0, (total, set) => total + set.reps);
@@ -39,13 +41,15 @@ class CompletedWorkout extends Equatable {
     final int id = data['id'] as int;
 
     final String name = data['name'] as String;
+    final String completedAtString = data['completed_at'] as String;
+    final DateTime completedAt = DateTime.parse(completedAtString);
 
     return CompletedWorkout(
-      id: id,
-      workoutSets: sets,
-      workoutId: workoutId,
-      name: name,
-    );
+        id: id,
+        workoutSets: sets,
+        workoutId: workoutId,
+        name: name,
+        completedAt: completedAt);
   }
 
   Map<String, dynamic> toMap() {
@@ -53,20 +57,22 @@ class CompletedWorkout extends Equatable {
       'sets': workoutSets.map((set) => set.toMap()).toList(),
       'workoutId': workoutId,
       'id': id,
-      'name': name
+      'name': name,
+      'completed_at': completedAt.toIso8601String()
     };
   }
 
-  CompletedWorkout copyWith({
-    int? workoutId,
-    List<WorkoutSet>? workoutSets,
-    int? id,
-    String? name
-  }) {
+  CompletedWorkout copyWith(
+      {int? workoutId,
+      List<WorkoutSet>? workoutSets,
+      int? id,
+      String? name,
+      DateTime? completedAt}) {
     return CompletedWorkout(
         workoutId: workoutId ?? this.workoutId,
         workoutSets: workoutSets ?? this.workoutSets,
         name: name ?? this.name,
+        completedAt: completedAt ?? this.completedAt,
         id: id ?? this.id);
   }
 }
