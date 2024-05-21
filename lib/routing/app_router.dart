@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
+import 'package:trainer_app/features/insights/presentation/individual_workout_options.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
 import 'package:trainer_app/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
@@ -13,7 +14,7 @@ import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
 import 'package:trainer_app/features/profile/presentation/completed_workouts_list.dart';
 import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
-import 'package:trainer_app/pages/insights.dart';
+import 'package:trainer_app/features/insights/presentation/insights.dart';
 import 'package:trainer_app/pages/leaderboard.dart';
 import 'package:trainer_app/features/profile/presentation/profile.dart';
 import 'package:trainer_app/routing/app_startup.dart';
@@ -45,7 +46,8 @@ enum AppRoute {
   createPlan,
   detail,
   completeWorkout,
-  completedWorkouts
+  completedWorkouts,
+  individualWorkoutOptions
 }
 
 @riverpod
@@ -168,12 +170,20 @@ GoRouter goRouter(GoRouterRef ref) {
             ]),
             StatefulShellBranch(navigatorKey: _insightsNavigatorKey, routes: [
               GoRoute(
-                path: '/insights',
-                name: AppRoute.insights.name,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: Insights(),
-                ),
-              ),
+                  path: '/insights',
+                  name: AppRoute.insights.name,
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: Insights(),
+                      ),
+                  routes: [
+                    GoRoute(
+                      path: 'individualWorkoutOptions',
+                      name: AppRoute.individualWorkoutOptions.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: IndividualWorkoutOptions(),
+                      ),
+                    ),
+                  ]),
             ]),
             StatefulShellBranch(
                 navigatorKey: _leaderboardNavigatorKey,
