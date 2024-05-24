@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,8 +61,7 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
             (Set<MaterialState> states) =>
                 states.contains(MaterialState.selected)
                     ? const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
                       )
                     : const TextStyle(
                         color: Color(0xFF797c82),
@@ -69,7 +69,6 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
           ),
         ),
         child: NavigationBar(
-          backgroundColor: Colors.white,
           selectedIndex: currentIndex,
           destinations: const [
             NavigationDestination(

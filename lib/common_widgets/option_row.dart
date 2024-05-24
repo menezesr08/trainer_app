@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 class OptionRow extends StatelessWidget {
@@ -15,14 +16,9 @@ class OptionRow extends StatelessWidget {
         height: 60,
         width: double.maxFinite,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.purple.withOpacity(0.9),
-              Colors.black.withOpacity(0.9),
-            ],
-            stops: const [0.0, 0.7],
+          border: Border.all(
+            color: FlexColor.purpleBrownDarkSecondaryContainer, // Border color
+            width: 3.0, // Border width
           ),
           borderRadius: const BorderRadius.all(Radius.circular(20)),
         ),

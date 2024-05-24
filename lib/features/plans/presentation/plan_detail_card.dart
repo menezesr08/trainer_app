@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 
@@ -17,14 +18,24 @@ class PlanDetailCard extends StatelessWidget {
           Text(
             w.name,
             style: const TextStyle(
-                color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20),
+                color: FlexColor.purpleBrownDarkSecondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20),
           ),
           const SizedBox(
             width: 20,
           ),
           Text(
-            '${w.sets} sets  ${w.reps} reps  ${w.weight} weight',
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            '${w.sets} x ${w.reps}',
+            style: const TextStyle(
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            '${w.weight} kg',
+            style: TextStyle(color: FlexColor.goldDarkSecondaryContainer),
           ),
         ]);
   }

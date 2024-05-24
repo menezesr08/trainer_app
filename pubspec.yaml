@@ -51,13 +51,16 @@ dependencies:
   equatable: ^2.0.5
   chat_gpt_sdk: ^2.2.5
   flutter_dotenv: ^5.1.0
-  intl: ^0.18.1
+  intl: 0.18.1
   url_launcher: ^6.2.4
   youtube_player_flutter: ^9.0.1
   geolocator: ^11.1.0
   flutter_local_notifications: ^17.1.2
   rxdart: ^0.27.7
-  fl_chart: ^0.65.0
+  fl_chart: ^0.60.0 
+  syncfusion_flutter_charts: ^22.2.12
+  flex_color_scheme: ^7.3.1
+  flip_card: ^0.7.0
 
 dev_dependencies:
   flutter_test:

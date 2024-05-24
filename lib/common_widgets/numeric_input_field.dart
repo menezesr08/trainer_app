@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,7 +14,8 @@ class NumericInputField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white, // Set background color to white
+        fillColor:
+            FlexColor.purpleBrownDarkSecondary, // Set background color to white
         border: OutlineInputBorder(
           // Add border
           borderSide: const BorderSide(color: Colors.purple), // Border color

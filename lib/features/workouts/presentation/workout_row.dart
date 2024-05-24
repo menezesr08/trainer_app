@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/common_widgets/numeric_input_field.dart';
@@ -51,10 +52,10 @@ class _ConsumerWorkoutRowState extends ConsumerState<WorkoutRow> {
       ),
       Text(
         '${widget.setNumber}',
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: FlexColor.purpleBrownDarkSecondary),
       ),
       const SizedBox(
-        width: 18,
+        width: 20,
       ),
       SizedBox(
         width: 48,
@@ -87,10 +88,12 @@ class _ConsumerWorkoutRowState extends ConsumerState<WorkoutRow> {
       const Text(
         'Reps',
         style: TextStyle(
-            color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),
+            color: FlexColor.purpleBrownDarkSecondary,
+            fontSize: 15,
+            fontWeight: FontWeight.bold),
       ),
       const SizedBox(
-        width: 10,
+        width: 30,
       ),
       SizedBox(
         width: 48,
@@ -121,9 +124,11 @@ class _ConsumerWorkoutRowState extends ConsumerState<WorkoutRow> {
         width: 10,
       ),
       const Text(
-        'Weight',
+        'Weight (kg)',
         style: TextStyle(
-            color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),
+            color: FlexColor.purpleBrownDarkSecondary,
+            fontSize: 15,
+            fontWeight: FontWeight.bold),
       ),
       const SizedBox(
         width: 10,

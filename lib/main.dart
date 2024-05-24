@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -31,19 +32,22 @@ void registerErrorHandlers() {
   };
 }
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 Future<void> initializeNotifications() async {
-  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeNotifications(); 
+  await initializeNotifications();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -58,37 +62,126 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
-    
+
     return MaterialApp.router(
       routerConfig: goRouter,
-      theme: ThemeData(
-        colorSchemeSeed: primaryColor,
-        unselectedWidgetColor: Colors.grey,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 2.0,
-          centerTitle: true,
+      // Theme config for FlexColorScheme version 7.3.x. Make sure you use
+// same or higher package version, but still same major version. If you
+// use a lower package version, some properties may not be supported.
+// In that case remove them after copying this theme to your app.
+      // Theme config for FlexColorScheme version 7.3.x. Make sure you use
+// same or higher package version, but still same major version. If you
+// use a lower package version, some properties may not be supported.
+// In that case remove them after copying this theme to your app.
+      theme: FlexThemeData.light(
+        scheme: FlexScheme.materialBaseline,
+        usedColors: 7,
+        surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+        blendLevel: 4,
+        appBarStyle: FlexAppBarStyle.background,
+        bottomAppBarElevation: 1.0,
+        subThemesData: const FlexSubThemesData(
+          blendOnLevel: 10,
+          blendOnColors: false,
+          blendTextTheme: true,
+          useTextTheme: true,
+          useM2StyleDividerInM3: true,
+          thickBorderWidth: 2.0,
+          elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+          elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
+          inputDecoratorSchemeColor: SchemeColor.primary,
+          inputDecoratorBackgroundAlpha: 12,
+          inputDecoratorRadius: 8.0,
+          inputDecoratorUnfocusedHasBorder: false,
+          inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+          alignedDropdown: true,
+          useInputDecoratorThemeInDialogs: true,
+          appBarScrolledUnderElevation: 8.0,
+          drawerElevation: 1.0,
+          drawerWidth: 290.0,
+          bottomNavigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+          bottomNavigationBarMutedUnselectedLabel: false,
+          bottomNavigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+          bottomNavigationBarMutedUnselectedIcon: false,
+          navigationBarSelectedLabelSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationBarSelectedIconSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationBarIndicatorSchemeColor: SchemeColor.secondaryContainer,
+          navigationBarIndicatorOpacity: 1.00,
+          navigationBarElevation: 1.0,
+          navigationBarHeight: 72.0,
+          navigationRailSelectedLabelSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationRailSelectedIconSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationRailIndicatorSchemeColor: SchemeColor.secondaryContainer,
+          navigationRailIndicatorOpacity: 1.00,
         ),
-        scaffoldBackgroundColor: Colors.grey[200],
-        dividerColor: Colors.grey[400],
-        // https://github.com/firebase/flutterfire/blob/master/packages/firebase_ui_auth/doc/theming.md
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: primaryColor,
-        ),
+        useMaterial3ErrorColors: true,
+        visualDensity: FlexColorScheme.comfortablePlatformDensity,
+        useMaterial3: true,
+        // To use the Playground font, add GoogleFonts package and uncomment
+        // fontFamily: GoogleFonts.notoSans().fontFamily,
       ),
+      darkTheme: FlexThemeData.dark(
+        colors: FlexColor
+            .schemes[FlexScheme.materialBaseline]!.light.defaultError
+            .toDark(40, false),
+        usedColors: 7,
+        surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+        blendLevel: 10,
+        appBarStyle: FlexAppBarStyle.background,
+        bottomAppBarElevation: 2.0,
+        subThemesData: const FlexSubThemesData(
+        
+          cardElevation: 4,
+          blendOnLevel: 20,
+          blendTextTheme: true,
+          useTextTheme: true,
+          useM2StyleDividerInM3: true,
+          thickBorderWidth: 2.0,
+          elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+          elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
+          inputDecoratorSchemeColor: SchemeColor.primary,
+          inputDecoratorBackgroundAlpha: 48,
+          inputDecoratorRadius: 8.0,
+          inputDecoratorUnfocusedHasBorder: false,
+          inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+          alignedDropdown: true,
+          useInputDecoratorThemeInDialogs: true,
+          drawerElevation: 1.0,
+          drawerWidth: 290.0,
+          bottomNavigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+          bottomNavigationBarMutedUnselectedLabel: false,
+          bottomNavigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+          bottomNavigationBarMutedUnselectedIcon: false,
+          navigationBarSelectedLabelSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationBarSelectedIconSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationBarIndicatorSchemeColor: SchemeColor.secondaryContainer,
+          navigationBarIndicatorOpacity: 1.00,
+          navigationBarElevation: 1.0,
+          navigationBarHeight: 72.0,
+          navigationRailSelectedLabelSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationRailSelectedIconSchemeColor:
+              SchemeColor.onSecondaryContainer,
+          navigationRailIndicatorSchemeColor: SchemeColor.secondaryContainer,
+          navigationRailIndicatorOpacity: 1.00,
+        ),
+        useMaterial3ErrorColors: true,
+        visualDensity: FlexColorScheme.comfortablePlatformDensity,
+        useMaterial3: true,
+
+        // To use the Playground font, add GoogleFonts package and uncomment
+        // fontFamily: GoogleFonts.notoSans().fontFamily,
+      ),
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
       debugShowCheckedModeBanner: false,
     );
   }

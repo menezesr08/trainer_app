@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -66,8 +67,7 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
             workoutSets: workoutSets,
             name: w.name,
             completedAt: DateTime.now(),
-            planName: widget.plan.name
-            ),
+            planName: widget.plan.name),
       );
     });
 
@@ -77,44 +77,29 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Fill in your session'), actions: [
-        Padding(
-          padding:
-              const EdgeInsets.only(right: 10.0), // Adjust the value as needed
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white, // Background color of the circle
-            ),
-            child: IconButton(
-              onPressed: () {
-                saveCompletedWorkoutToFirestore();
-                GoRouter.of(context).go('/plans');
-              },
-              icon: const Icon(Icons.check, color: Colors.green, size: 24),
-            ), // Icon inside the circle
+      appBar: AppBar(
+          title: const Text(
+            'Fill in your session',
+            style: TextStyle(color: FlexColor.purpleBrownDarkSecondary),
           ),
-        ),
-      ]),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(
+                  right: 10.0), // Adjust the value as needed
+              child: IconButton(
+                onPressed: () {
+                  saveCompletedWorkoutToFirestore();
+                  GoRouter.of(context).go('/plans');
+                },
+                icon: const Icon(Icons.check,
+                    color: FlexColor.purpleBrownDarkPrimary, size: 24),
+              ),
+            ),
+          ]),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              height: 40,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                'Complete your workout!',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-              ),
-            ),
             ...widget.plan.workouts.map((w) {
               return Column(
                 children: [

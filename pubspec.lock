@@ -445,10 +445,34 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: "5a74434cc83bf64346efb562f1a06eefaf1bcb530dc3d96a104f631a1eff8d79"
+      sha256: "155556c4aba56c8474308d51b4e5446b80a07db9ab66a3cb74aff05c110df982"
       url: "https://pub.dev"
     source: hosted
-    version: "0.65.0"
+    version: "0.60.0"
+  flex_color_scheme:
+    dependency: "direct main"
+    description:
+      name: flex_color_scheme
+      sha256: "32914024a4f404d90ff449f58d279191675b28e7c08824046baf06826e99d984"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.3.1"
+  flex_seed_scheme:
+    dependency: transitive
+    description:
+      name: flex_seed_scheme
+      sha256: "29c12aba221eb8a368a119685371381f8035011d18de5ba277ad11d7dfb8657f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
+  flip_card:
+    dependency: "direct main"
+    description:
+      name: flip_card
+      sha256: "5d4aa58f3983cced0782f4ce45826b7eea36e8e464964d9209dcbc7a87b2292f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -1082,6 +1106,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: "9b3087a6b2e06a23ae322123a4cd6a9f06256958eee1aeceda47d043bb2dd794"
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.2.12"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "9f0a4593f7642b2f106e329734d0e5fc746baf8d0a59495eec586cd0d9ba7d02"
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.2.12"
   term_glyph:
     dependency: transitive
     description:

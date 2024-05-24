@@ -9,17 +9,18 @@ class CompletedWorkout extends Equatable {
   final DateTime completedAt;
   final String planName;
 
-  const CompletedWorkout(
-      {required this.workoutSets,
-      required this.workoutId,
-      required this.id,
-      required this.name,
-      required this.completedAt,
-      required this.planName,
-      });
+  const CompletedWorkout({
+    required this.workoutSets,
+    required this.workoutId,
+    required this.id,
+    required this.name,
+    required this.completedAt,
+    required this.planName,
+  });
 
   @override
-  List<Object> get props => [id, workoutSets, workoutId, name, completedAt, planName];
+  List<Object> get props =>
+      [id, workoutSets, workoutId, name, completedAt, planName];
 
   int get totalReps {
     return workoutSets.fold(0, (total, set) => total + set.reps);
@@ -27,6 +28,25 @@ class CompletedWorkout extends Equatable {
 
   int get totalWeight {
     return workoutSets.fold(0, (total, set) => total + set.weight);
+  }
+
+  int get maxWeight {
+  return workoutSets.fold(0, (max, set) => set.weight > max ? set.weight : max);
+}
+
+  int get totalVolume {
+    // Sum the volume of all sets
+    return workoutSets.fold(0, (sum, set) => sum + (set.reps * set.weight));
+  }
+
+  double get averageReps {
+    if (workoutSets.isEmpty) return 0;
+    return totalReps / workoutSets.length;
+  }
+
+  double get averageWeight {
+    if (workoutSets.isEmpty) return 0;
+    return totalWeight / workoutSets.length;
   }
 
   @override
@@ -47,7 +67,7 @@ class CompletedWorkout extends Equatable {
     final String completedAtString = data['completed_at'] as String;
     final DateTime completedAt = DateTime.parse(completedAtString);
 
-   final String planName = data['plan_name'] as String;
+    final String planName = data['plan_name'] as String;
 
     return CompletedWorkout(
         id: id,
@@ -55,8 +75,7 @@ class CompletedWorkout extends Equatable {
         workoutId: workoutId,
         name: name,
         completedAt: completedAt,
-        planName: planName
-        );
+        planName: planName);
   }
 
   Map<String, dynamic> toMap() {
@@ -66,7 +85,7 @@ class CompletedWorkout extends Equatable {
       'id': id,
       'name': name,
       'completed_at': completedAt.toIso8601String(),
-      'plan_name' : planName
+      'plan_name': planName
     };
   }
 
@@ -76,15 +95,13 @@ class CompletedWorkout extends Equatable {
       int? id,
       String? name,
       DateTime? completedAt,
-      String? planName
-      }) {
+      String? planName}) {
     return CompletedWorkout(
         workoutId: workoutId ?? this.workoutId,
         workoutSets: workoutSets ?? this.workoutSets,
         name: name ?? this.name,
         completedAt: completedAt ?? this.completedAt,
         id: id ?? this.id,
-        planName: planName ?? this.planName
-        );
+        planName: planName ?? this.planName);
   }
 }

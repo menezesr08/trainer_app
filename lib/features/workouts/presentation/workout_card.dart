@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/features/workouts/domain/set.dart';
@@ -45,16 +46,6 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
       padding: const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.purple.withOpacity(0.9),
-              Colors.black.withOpacity(0.9), // Adjust opacity as needed
-              // Adjust opacity as needed
-            ],
-            stops: const [0.0, 0.5],
-          ),
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Column(
@@ -62,8 +53,10 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(20)),
+                border: Border.all(
+                    color: FlexColor.purpleBrownDarkSecondary, width: 2),
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -75,7 +68,7 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
                       child: Text(
                         widget.w.name,
                         style: const TextStyle(
-                            color: Colors.white,
+                            color: FlexColor.purpleBrownDarkSecondary,
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
@@ -85,7 +78,10 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
                     ),
                     ...[
                       for (var i = 0; i < widget.w.sets; i++)
-                        WorkoutRow(setNumber: i, w: widget.w)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: WorkoutRow(setNumber: i, w: widget.w),
+                        )
                     ],
                     const SizedBox(
                       height: 20,
@@ -98,4 +94,3 @@ class _InputWorkoutState extends ConsumerState<WorkoutCard> {
     );
   }
 }
-

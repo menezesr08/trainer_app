@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/completed_workout.dart';
-import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 part 'workouts_repository.g.dart';
 
@@ -10,6 +10,8 @@ class WorkoutsRepository {
   WorkoutsRepository();
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  CollectionReference get userCollection => _firestore.collection('users');
+  CollectionReference get workoutIdCounter => _firestore.collection('workout_id_counter');
 
   Future<List<BaseWorkout>> getBaseWorkouts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -31,9 +33,7 @@ class WorkoutsRepository {
   void addCompletedWorkout(
       String userId, List<CompletedWorkout> completedWorkouts) async {
     try {
-      final CollectionReference userCompletedWorkoutsRef = FirebaseFirestore
-          .instance
-          .collection('users')
+      final CollectionReference userCompletedWorkoutsRef = userCollection
           .doc(userId)
           .collection('completedWorkouts');
 
@@ -48,10 +48,8 @@ class WorkoutsRepository {
   }
 
   Future<int> generateUniqueId() async {
-    final CollectionReference idCounterRef =
-        _firestore.collection('workout_id_counter');
-    // Get current ID counter document
-    DocumentSnapshot docSnapshot = await idCounterRef.doc('counter').get();
+
+    DocumentSnapshot docSnapshot = await workoutIdCounter.doc('counter').get();
 
     int lastId = 0;
 
@@ -63,7 +61,7 @@ class WorkoutsRepository {
     int newId = lastId + 1;
 
     // Update ID counter document with new ID
-    await idCounterRef.doc('counter').set({'last_id': newId});
+    await workoutIdCounter.doc('counter').set({'last_id': newId});
 
     return newId;
   }
@@ -71,12 +69,7 @@ class WorkoutsRepository {
   Stream<List<CompletedWorkout>> getCompletedWorkoutsFromFirestore(
       String userId) {
     try {
-      // Get the Firestore instance
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Query the user's plans collection and listen for real-time updates
-      return firestore
-          .collection('users')
+      return userCollection
           .doc(userId)
           .collection('completedWorkouts')
           .snapshots()
@@ -97,6 +90,13 @@ class WorkoutsRepository {
 final baseWorkoutsProvider = FutureProvider<List<BaseWorkout>>((ref) async {
   final workoutsRepository = ref.read(workoutsRepositoryProvider);
   return workoutsRepository.getBaseWorkouts();
+});
+
+final completedWorkoutsProvider = StreamProvider<List<CompletedWorkout>>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  final userId = authRepository.currentUser!.uid;
+  final workoutsRepository = ref.read(workoutsRepositoryProvider);
+  return workoutsRepository.getCompletedWorkoutsFromFirestore(userId);
 });
 
 @Riverpod(keepAlive: true)
