@@ -14,6 +14,7 @@ import 'package:trainer_app/features/plans/presentation/create_plan.dart';
 import 'package:trainer_app/features/plans/presentation/plan_details.dart';
 import 'package:trainer_app/features/plans/presentation/plans.dart';
 import 'package:trainer_app/features/profile/presentation/completed_workouts_list.dart';
+import 'package:trainer_app/features/profile/presentation/update_profile.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
 import 'package:trainer_app/features/insights/presentation/insights.dart';
@@ -49,6 +50,7 @@ enum AppRoute {
   detail,
   completeWorkout,
   completedWorkouts,
+  updateProfile,
   individualWorkoutOptions,
   individualWorkoutInsights
 }
@@ -221,6 +223,13 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.completedWorkouts.name,
                       pageBuilder: (context, state) => const NoTransitionPage(
                         child: CompletedWorkoutsList(),
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'updateProfile',
+                      name: AppRoute.updateProfile.name,
+                      pageBuilder: (context, state) => const NoTransitionPage(
+                        child: UpdateProfile(),
                       ),
                     ),
                   ]),

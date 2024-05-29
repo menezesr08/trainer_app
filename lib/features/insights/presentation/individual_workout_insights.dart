@@ -47,7 +47,7 @@ class _ConsumerIndividualWorkoutInsightsState
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Padding(
@@ -56,7 +56,7 @@ class _ConsumerIndividualWorkoutInsightsState
                 cw: filteredData,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -79,7 +79,7 @@ class _ConsumerIndividualWorkoutInsightsState
                     seconds:
                         2), // The flip effect will work automatically after the 2 seconds
               ),
-              buildCustomContainer('Personal Target Met', IconWidget(),
+              buildCustomContainer('Personal Target Met', const IconWidget(),
                   personalTarget: true),
             ]),
           ],
@@ -87,7 +87,7 @@ class _ConsumerIndividualWorkoutInsightsState
       },
       loading: () {
         // Render loading indicator
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
       error: (error, stackTrace) {
         // Render error UI
@@ -101,18 +101,18 @@ class _ConsumerIndividualWorkoutInsightsState
     return Container(
       width: 100,
       height: 150,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: personalTarget
             ? FlexColor.redDarkPrimaryContainer
-            : Color(0xFFF5F5F5),
+            : const Color(0xFFF5F5F5),
         border: Border.all(
           color: Colors.black, // Soft blue border
           width: 3,
         ),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
-          BoxShadow(
+          const BoxShadow(
             color: Colors.black, // Light gray shadow
             spreadRadius: 5,
             blurRadius: 7,
@@ -124,13 +124,13 @@ class _ConsumerIndividualWorkoutInsightsState
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Color(0xFF333333),
             ),
             textAlign: TextAlign.center,
           ),
-          Divider(
+          const Divider(
             color: Color(0xFFCCCCCC),
             thickness: 2,
             height: 20,
@@ -148,7 +148,7 @@ class IconWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return const Expanded(
       child: Center(
           child: Icon(
         Icons.close,
@@ -168,7 +168,7 @@ class TextWidget extends StatelessWidget {
       child: Center(
         child: Text(
           data,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 30,
               color: Color(0xFF333333),
               fontWeight: FontWeight.bold),

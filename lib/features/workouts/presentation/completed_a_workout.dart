@@ -28,10 +28,10 @@ class _CompletedWorkoutState extends ConsumerState<CompleteAWorkout> {
 
   void saveCompletedWorkoutToFirestore() {
     final workoutsToSave = ref.read(completedWorkoutProvider);
-    final userId = ref.read(authRepositoryProvider).currentUser!.uid;
+    final userId = ref.watch(userIdProvider);
     final workoutRepository = ref.read(workoutsRepositoryProvider);
 
-    workoutRepository.addCompletedWorkout(userId, workoutsToSave);
+    workoutRepository.addCompletedWorkout(userId!, workoutsToSave);
   }
 
   @override

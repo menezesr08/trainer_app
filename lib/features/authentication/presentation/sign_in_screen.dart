@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
+import 'package:trainer_app/features/authentication/domain/create_user_params.dart';
 
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({super.key});
@@ -92,14 +93,21 @@ class SignInScreen extends ConsumerWidget {
                   // Add some vertical spacing
                   ElevatedButton(
                     onPressed: () async {
-                      signInState._selectedOption == "Login"
-                          ? await authProvider.signInWithEmailAndPassword(
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim())
-                          : await authProvider.createUserWithEmailAndPassword(
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim(),
-                              type: dropDownState.selectedOption);
+                      if (signInState.selectedOption == "Login") {
+                        await authProvider.signInWithEmailAndPassword(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
+                      } else {
+                        final params = UserParams(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                          type: dropDownState.selectedOption,
+                        );
+
+                        // Read the provider with the given parameters
+                        ref.read(createUserProvider(params));
+                      }
                     },
                     child: Text(signInState.selectedOption == 'Login'
                         ? 'Login'

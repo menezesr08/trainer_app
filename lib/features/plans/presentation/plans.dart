@@ -30,10 +30,9 @@ class Plans extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final authRepository = ref.watch(authRepositoryProvider);
-    final userId = authRepository.currentUser!.uid;
+    final userId = ref.watch(userIdProvider);
     final plansProvider = ref.watch(planRepositoryProvider);
-    final plans = ref.watch(getPlansStream(userId));
+    final plans = ref.watch(getPlansStream(userId!));
 
     return Scaffold(
       appBar: AppBar(

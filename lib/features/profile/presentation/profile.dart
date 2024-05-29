@@ -31,6 +31,15 @@ class Profile extends StatelessWidget {
             height: 30,
           ),
           OptionRow(
+            title: 'Update Profile',
+            onTapped: () {
+              GoRouter.of(context).push('/profile/updateProfile');
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          OptionRow(
             title: 'Completed Workouts',
             onTapped: () {
               GoRouter.of(context).push('/profile/completedWorkouts');

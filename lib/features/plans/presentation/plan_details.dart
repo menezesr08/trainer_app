@@ -7,6 +7,7 @@ import 'package:trainer_app/features/authentication/data/firebase_auth_repositor
 import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/plans_providers.dart';
+import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 import 'package:trainer_app/features/workouts/extensions.dart';
@@ -23,12 +24,12 @@ class PlanDetails extends ConsumerStatefulWidget {
 class _PlanDetailsState extends ConsumerState<PlanDetails> {
   void savePlanToFirestore() {
     final workoutsToSave = ref.read(updatedWorkoutsForPlan);
-    final userId = ref.read(authRepositoryProvider).currentUser!.uid;
+    final userId = ref.watch(userIdProvider);
     final planRepository = ref.read(planRepositoryProvider);
 
     planRepository.addPlanToFirestore(
       widget.plan?.id,
-      userId,
+      userId!,
       widget.planName,
       workoutsToSave,
     );
