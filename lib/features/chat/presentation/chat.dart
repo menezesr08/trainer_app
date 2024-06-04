@@ -1,28 +1,36 @@
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:trainer_app/features/chat/model.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:trainer_app/features/chat/model/model.dart';
+import 'package:trainer_app/features/chat/presentation/ratings_bar.dart';
+import 'package:trainer_app/features/chat/presentation/selectable_options.dart';
+import 'package:trainer_app/features/plans/domain/check_in_manager.dart';
+import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({
     super.key,
-    required this.character,
+    required this.flowString,
   });
 
-  final String character;
+  final String flowString;
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  ConsumerState<ChatPage> createState() => _ConsumerChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ConsumerChatPageState extends ConsumerState<ChatPage> {
   late final OpenAI _openAI;
   late bool _isLoading;
   final TextEditingController _textController = TextEditingController();
   late List<ChatMessage> _messages;
+  late CheckInManager _checkInManager;
+  late String userName;
+  final ratingsLabel = ['Very Poor', 'Poor', 'Average', 'Good', 'Excellent'];
 
   @override
   void initState() {
@@ -36,27 +44,68 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
 
-    _handleInitialMessage(
-      'You are a ${widget.character.toLowerCase()}. Please send a super short intro message. Your name is Echo.',
-    );
+    _checkInManager = CheckInManager(flows: {
+      'standard': CheckInFlow(name: 'standard', questions: []),
+      'check_in': CheckInFlow(name: 'check_in', questions: [
+        _buildQuestion(
+          "How were your workouts this week?",
+          RatingBar(
+            ratingLabels: ratingsLabel,
+            onRatingChanged: (v) {
+              if (v - 1 < 2) {
+                _checkInManager.addQuestion(
+                  'What do you think is the main reason for this?',
+                  SelectableOptions(
+                    options: [
+                      SelectableOption(
+                          label: 'Lack of Sleep', value: 'lack_of_sleep'),
+                      SelectableOption(
+                          label: 'Poor Nutrition', value: 'poor_nutrition'),
+                      SelectableOption(
+                          label: 'No Warm-Up', value: 'no_warm_up'),
+                      SelectableOption(
+                          label: 'Mental Stress', value: 'mental_stress'),
+                      SelectableOption(
+                          label: 'Overtraining', value: 'overtraining'),
+                    ],
+                    selectedOption: null,
+                    onOptionSelected: (value) async {
+                      await standardCHATGPTResponse(
+                          'Give me 3 solutions for $value');
+                      _askCheckInQuestion();
+                    },
+                  ),
+                );
+              }
+
+              _askCheckInQuestion();
+            },
+          ),
+        ),
+        _buildQuestion("How are you sleeping?", Text('hi')),
+        _buildQuestion("How is your diet?", Text('test')),
+      ]),
+    });
+
+    _checkInManager.startFlow(widget.flowString);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      userName =
+          await ref.read(getUserProvider.future).then((user) => user!.name);
+      _handleInitialMessage();
+    });
+
     super.initState();
   }
 
-  Future<void> _handleInitialMessage(String character) async {
+  Future<void> _handleInitialMessage() async {
     setState(() {
       _isLoading = true;
     });
 
-    final request = ChatCompleteText(
-        messages: [Messages(role: Role.user, content: 'Hello User')],
-        maxToken: 200,
-        model: ChatModelFromValue(
-            model: 'ft:gpt-3.5-turbo-0613:personal::9KQFqfxV'));
-
-    final response = await _openAI.onChatCompletion(request: request);
-
+    // Simulated initial message
     ChatMessage message = ChatMessage(
-      text: response!.choices.first.message!.content.trim().replaceAll('"', ''),
+      text: "Hi, I'm your assistant. How can I help you today?",
       isSentByMe: false,
       timestamp: DateTime.now(),
     );
@@ -65,6 +114,27 @@ class _ChatPageState extends State<ChatPage> {
       _messages.insert(0, message);
       _isLoading = false;
     });
+
+    if (_checkInManager.currentFlow.name != 'standard') {
+      _askCheckInQuestion();
+    }
+  }
+
+  void _askCheckInQuestion() {
+    if (_checkInManager.currentFlow.questions.isNotEmpty) {
+      var nextQuestion = _checkInManager.currentFlow.questions.removeAt(0);
+
+      ChatMessage message = ChatMessage(
+        text: nextQuestion['question'],
+        isSentByMe: false,
+        timestamp: DateTime.now(),
+        item: nextQuestion['widget'],
+      );
+
+      setState(() {
+        _messages.insert(0, message);
+      });
+    }
   }
 
   Future<void> _handleSubmit(String text) async {
@@ -80,12 +150,41 @@ class _ChatPageState extends State<ChatPage> {
       _messages.insert(0, prompt);
     });
 
+    if (_checkInManager.currentFlow.name != 'standard') {
+      _askCheckInQuestion();
+    } else {
+      // Simulated ChatGPT response
+      ChatMessage response = ChatMessage(
+        text: "This is a response from ChatGPT.",
+        isSentByMe: false,
+        timestamp: DateTime.now(),
+      );
+
+      setState(() {
+        _messages.insert(0, response);
+        _isLoading = false;
+      });
+    }
+  }
+
+  Map<String, dynamic> _buildQuestion(String question, Widget widget) {
+    return {
+      'question': question,
+      'widget': widget,
+    };
+  }
+
+  Future<void> standardCHATGPTResponse(String text) async {
     final request = ChatCompleteText(
       messages: [Messages(role: Role.user, content: text)],
       maxToken: 200,
       model:
           ChatModelFromValue(model: 'ft:gpt-3.5-turbo-0613:personal::9KMlAHyw'),
     );
+
+    setState(() {
+      _isLoading = true;
+    });
 
     final response = await _openAI.onChatCompletion(request: request);
 
@@ -115,7 +214,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildChatBubble(ChatMessage message) {
+  Widget _buildChatBubble(
+    ChatMessage message,
+  ) {
     final isSentByMe = message.isSentByMe;
     final dateFormat = DateFormat('MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
@@ -142,7 +243,7 @@ class _ChatPageState extends State<ChatPage> {
                   ? const EdgeInsets.only(left: 100)
                   : const EdgeInsets.only(right: 100),
               decoration: BoxDecoration(
-                color: isSentByMe ? Colors.blue : Colors.grey[300],
+                color: isSentByMe ? Colors.white : Colors.black,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(12.0),
                   topRight: const Radius.circular(12.0),
@@ -163,12 +264,10 @@ class _ChatPageState extends State<ChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isSentByMe
-                        ? 'Rohan'
-                        : widget.character.toString().replaceAll(' ', ''),
+                    isSentByMe ? userName : 'Charlie',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isSentByMe ? Colors.white : Colors.black,
+                      color: isSentByMe ? Colors.black : Colors.white,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -176,12 +275,19 @@ class _ChatPageState extends State<ChatPage> {
                       ? YouTubeTextWithThumbnails(
                           text: message.text,
                         )
-                      : Text(message.text),
+                      : Text(
+                          message.text,
+                          style: TextStyle(
+                            color: isSentByMe ? Colors.black : Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
                   const SizedBox(height: 12),
+                  if (message.item != null) message.item!,
                   Text(
                     '${dateFormat.format(message.timestamp)} at ${timeFormat.format(message.timestamp)}',
                     style: TextStyle(
-                      color: isSentByMe ? Colors.white : Colors.black87,
+                      color: isSentByMe ? Colors.black : Colors.white,
                       fontSize: 8,
                     ),
                   ),
@@ -229,25 +335,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black87,
-          ),
-        ),
-        title: const Text(
-          'Ask me something!',
-          style: TextStyle(
-            color: Colors.black87,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32),
         child: Stack(
@@ -255,6 +342,11 @@ class _ChatPageState extends State<ChatPage> {
             Column(
               children: [
                 _buildChatList(),
+                if (_isLoading)
+                  LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.white,
+                    size: 50,
+                  ),
                 const Divider(height: 1.0),
                 Container(
                   decoration: BoxDecoration(
@@ -264,13 +356,6 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ],
             ),
-            if (_isLoading)
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.all(20),
-                  child: const CircularProgressIndicator(),
-                ),
-              ),
           ],
         ),
       ),

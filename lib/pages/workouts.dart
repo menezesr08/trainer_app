@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
-import 'package:trainer_app/features/chat/chat.dart';
+import 'package:trainer_app/features/chat/presentation/chat.dart';
 
 // need to build out firebase auth to save how many reps user did in user object
 class Workouts extends ConsumerWidget {
@@ -15,7 +15,7 @@ class Workouts extends ConsumerWidget {
           context,
           MaterialPageRoute(
             builder: (context) => ChatPage(
-              character: character,
+              flowString: character,
             ),
           ),
         );

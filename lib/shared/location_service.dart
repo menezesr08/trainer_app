@@ -43,9 +43,9 @@ Stream<Position> location(LocationRef ref) async* {
 
     bool isWithin = await locationService.isWithinRegion(position, targetLat, targetLon, radius);
 
-    if (isWithin) {
-      await showNotification('Location Alert', 'You have entered the target region.');
-    }
+    // if (isWithin) {
+    //   await showNotification('Location Alert', 'You have entered the target region.');
+    // }
 
     yield position;
   }

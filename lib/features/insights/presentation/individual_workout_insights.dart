@@ -2,10 +2,35 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trainer_app/features/insights/presentation/graph.dart';
+import 'package:trainer_app/features/insights/presentation/progress_bar.dart';
+import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
 
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
+
+class ProgressData {
+  final String category;
+  final double value;
+  final double progress;
+
+  ProgressData(this.category, this.value, this.progress);
+}
+
+double calculateProgress(
+  double weight,
+  double lowerBound,
+  double upperBound,
+) {
+  if (weight > upperBound) {
+    return 1;
+  } else if (weight > lowerBound && weight <= upperBound) {
+    return (weight - lowerBound) / (upperBound - lowerBound);
+  } else {
+    return 0;
+  }
+}
 
 class IndividualWorkoutInsights extends ConsumerStatefulWidget {
   const IndividualWorkoutInsights({super.key, required this.w});
@@ -21,78 +46,136 @@ class _ConsumerIndividualWorkoutInsightsState
   @override
   Widget build(BuildContext context) {
     final completedWorkoutsStream = ref.watch(completedWorkoutsProvider);
+    final user = ref.watch(getUserProvider);
 
-    return completedWorkoutsStream.when(
-      data: (data) {
-        final filteredData = data
-            .where((element) => element.workoutId == widget.w.id)
-            .toList()
-          ..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+    return user.when(
+      data: (user) {
+        if (user == null) {
+          return Center(child: Text('No user data available'));
+        }
 
-        final maxWeight = filteredData.fold(
-            0, (max, w) => w.maxWeight > max ? w.maxWeight : max);
+        return completedWorkoutsStream.when(
+          data: (data) {
+            final filteredData = data
+                .where((element) => element.workoutId == widget.w.id)
+                .toList()
+              ..sort((a, b) => b.completedAt.compareTo(a.completedAt));
 
-        return Column(
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                widget.w.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Graph(
-                cw: filteredData,
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              FlipCard(
-                fill: Fill
-                    .fillBack, // Fill the back side of the card to make in the same size as the front.
-                direction: FlipDirection.HORIZONTAL, // default
-                side: CardSide.FRONT, // The side to initially display.
-                front: buildCustomContainer(
-                  'Number of workouts',
-                  TextWidget(data: filteredData.length.toString()),
-                ),
-                back: buildCustomContainer(
-                  'Max weight',
-                  TextWidget(
-                    data: maxWeight.toString(),
+            final maxWeight = filteredData
+                .fold(0, (max, w) => w.maxWeight > max ? w.maxWeight : max)
+                .toDouble();
+
+            double bodyweight = user.bodyWeight!.toDouble();
+            double beginnerValue = calculateBeginner(bodyweight);
+            double noviceValue = calculateNovice(bodyweight);
+            double intermediateValue = calculateIntermediate(bodyweight);
+            double advancedValue = calculateAdvanced(bodyweight);
+
+            double beginnerProgress =
+                calculateProgress(maxWeight, 0, beginnerValue);
+            double noviceProgress =
+                calculateProgress(maxWeight, beginnerValue, noviceValue);
+            double intermediateProgress =
+                calculateProgress(maxWeight, noviceValue, intermediateValue);
+            double advancedProgress =
+                calculateProgress(maxWeight, intermediateValue, advancedValue);
+
+            // Ensure only achievable bars fill up
+            List<ProgressData> progressData = [
+              ProgressData('Beginner', beginnerValue, beginnerProgress),
+              ProgressData('Novice', noviceValue, noviceProgress),
+              ProgressData(
+                  'Intermediate', intermediateValue, intermediateProgress),
+              ProgressData('Advanced', advancedValue, advancedProgress),
+            ];
+
+            return WillPopScope(
+              onWillPop: () async {
+                GoRouter.of(context).pop();
+                return true;
+              },
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-                autoFlipDuration: const Duration(
-                    seconds:
-                        2), // The flip effect will work automatically after the 2 seconds
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      widget.w.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    height: 220,
+                    width: 380,
+                    child: Graph(
+                        cw: filteredData,
+                        user: user // Pass user bodyweight here
+                        ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: progressData.map((data) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: ProgressBar(
+                          category: data.category,
+                          value: data.value,
+                          progress: data.progress,
+                          userPerformance: maxWeight,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      FlipCard(
+                        fill: Fill
+                            .fillBack, // Fill the back side of the card to make in the same size as the front.
+                        direction: FlipDirection.HORIZONTAL, // default
+                        side: CardSide.FRONT, // The side to initially display.
+                        front: buildCustomContainer(
+                          'Number of workouts',
+                          TextWidget(data: filteredData.length.toString()),
+                        ),
+                        back: buildCustomContainer(
+                          'Max weight',
+                          TextWidget(
+                            data: maxWeight.toInt().toString(),
+                          ),
+                        ),
+                        autoFlipDuration: const Duration(
+                            seconds:
+                                2), // The flip effect will work automatically after the 2 seconds
+                      ),
+                      buildCustomContainer(
+                        'Personal Target Met',
+                        const IconWidget(),
+                        personalTarget: true,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              buildCustomContainer('Personal Target Met', const IconWidget(),
-                  personalTarget: true),
-            ]),
-          ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) =>
+              Center(child: Text('Error loading workouts: $error')),
         );
       },
-      loading: () {
-        // Render loading indicator
-        return const CircularProgressIndicator();
-      },
-      error: (error, stackTrace) {
-        // Render error UI
-        return Text('Error: $error');
-      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) =>
+          Center(child: Text('Error loading user: $error')),
     );
   }
 
@@ -100,7 +183,7 @@ class _ConsumerIndividualWorkoutInsightsState
       {bool personalTarget = false}) {
     return Container(
       width: 100,
-      height: 150,
+      height: 110,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: personalTarget
@@ -152,7 +235,7 @@ class IconWidget extends StatelessWidget {
       child: Center(
           child: Icon(
         Icons.close,
-        size: 50,
+        size: 35,
       )),
     );
   }
@@ -169,11 +252,27 @@ class TextWidget extends StatelessWidget {
         child: Text(
           data,
           style: const TextStyle(
-              fontSize: 30,
+              fontSize: 20,
               color: Color(0xFF333333),
               fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
+}
+
+double calculateBeginner(double bodyweight) {
+  return 0.7 * bodyweight + 5;
+}
+
+double calculateNovice(double bodyweight) {
+  return 1.5 * bodyweight + 28;
+}
+
+double calculateIntermediate(double bodyweight) {
+  return 2.5 * bodyweight + 7;
+}
+
+double calculateAdvanced(double bodyweight) {
+  return 3.2 * bodyweight - 1;
 }

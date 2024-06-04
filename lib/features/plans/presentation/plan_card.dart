@@ -51,7 +51,7 @@ class PlanCard extends StatelessWidget {
             );
           },
           child: Card(
-            color: Colors.transparent,
+            color: Color(0xff6a040f),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
@@ -71,10 +71,12 @@ class PlanCard extends StatelessWidget {
                     subtitle: Text(
                       plan.name,
                       style: const TextStyle(
-                          color: FlexColor.purpleBrownDarkSecondary,
+                          color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold),
                     )),
+                    SizedBox(height: 30,),
+                 
               ],
             ),
           ),

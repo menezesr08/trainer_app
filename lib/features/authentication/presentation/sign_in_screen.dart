@@ -10,8 +10,10 @@ class SignInScreen extends ConsumerWidget {
     final dropDownState = ref.watch(dropDownStateProvider);
     final signInState = ref.watch(signInStateProvider);
     final authProvider = ref.read(authRepositoryProvider);
+        final TextEditingController nameController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Trainer App'),
@@ -59,6 +61,15 @@ class SignInScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                    signInState.selectedOption == 'Register' ?
+                    TextField(
+                    controller: nameController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ) : const SizedBox.shrink(),
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -103,6 +114,7 @@ class SignInScreen extends ConsumerWidget {
                           email: emailController.text.trim(),
                           password: passwordController.text.trim(),
                           type: dropDownState.selectedOption,
+                          name: nameController.text.trim()
                         );
 
                         // Read the provider with the given parameters

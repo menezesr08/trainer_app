@@ -57,6 +57,7 @@ Future<void> createUser(CreateUserRef ref, UserParams params) async {
     id: credential.user!.uid,
     email: params.email,
     type: params.type,
+    name: params.name
   );
 
   final userRepository = ref.read(userRepositoryProvider);

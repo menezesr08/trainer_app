@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
+import 'package:trainer_app/features/chat/presentation/chat.dart';
 import 'package:trainer_app/features/insights/presentation/individual_workout_insights.dart';
 import 'package:trainer_app/features/insights/presentation/individual_workout_options.dart';
 import 'package:trainer_app/features/onboarding/data/onboarding_repository.dart';
@@ -27,7 +28,7 @@ import 'package:trainer_app/routing/scaffold_with_nested_navigation.dart';
 
 part 'app_router.g.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 final _plansNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'plans');
 final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _leaderboardNavigatorKey =
@@ -52,7 +53,8 @@ enum AppRoute {
   completedWorkouts,
   updateProfile,
   individualWorkoutOptions,
-  individualWorkoutInsights
+  individualWorkoutInsights,
+  chat
 }
 
 @riverpod
@@ -62,7 +64,7 @@ GoRouter goRouter(GoRouterRef ref) {
 
   return GoRouter(
     initialLocation: '/signIn',
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: true,
     extraCodec: const MyExtraCodec(),
     redirect: (context, state) {
@@ -132,6 +134,18 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) {
           Plan plan = state.extra as Plan;
           return CompleteAWorkout(plan: plan);
+        },
+      ),
+      GoRoute(
+        path: '/chat/:flowString',
+        name: AppRoute.chat.name,
+        pageBuilder: (context, state) {
+          final flow = state.pathParameters['flowString'];
+          return NoTransitionPage(
+            child: ChatPage(
+              flowString: flow!,
+            ),
+          );
         },
       ),
       StatefulShellRoute.indexedStack(
@@ -297,7 +311,7 @@ class _MyExtraEncoder extends Converter<Object?, Object?> {
       return <Object?>['Plan', input.toMap()];
     }
 
-     if (input is BaseWorkout) {
+    if (input is BaseWorkout) {
       return <Object?>['BaseWorkout', input.toMap()];
     }
     throw FormatException('Cannot encode type ${input.runtimeType}');
