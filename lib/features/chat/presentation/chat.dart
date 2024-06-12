@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:trainer_app/features/chat/model/model.dart';
-import 'package:trainer_app/features/chat/presentation/ratings_bar.dart';
-import 'package:trainer_app/features/chat/presentation/selectable_options.dart';
-import 'package:trainer_app/features/plans/domain/check_in_manager.dart';
+import 'package:trainer_app/features/chat/presentation/question_builders.dart';
+
+import 'package:trainer_app/features/chat/providers.dart';
+import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
+import 'package:trainer_app/features/plans/domain/flow.dart';
 import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -25,17 +27,16 @@ class ChatPage extends ConsumerStatefulWidget {
 
 class _ConsumerChatPageState extends ConsumerState<ChatPage> {
   late final OpenAI _openAI;
-  late bool _isLoading;
+
   final TextEditingController _textController = TextEditingController();
-  late List<ChatMessage> _messages;
-  late CheckInManager _checkInManager;
+  late ChatFlowsManager _chatFlowsManager;
+  late QuestionBuilders _questionBuilders;
   late String userName;
   final ratingsLabel = ['Very Poor', 'Poor', 'Average', 'Good', 'Excellent'];
 
   @override
   void initState() {
-    _messages = [];
-    _isLoading = false;
+    super.initState();
 
     _openAI = OpenAI.instance.build(
       token: dotenv.env['OPENAI_API_KEY'],
@@ -44,96 +45,53 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
       ),
     );
 
-    _checkInManager = CheckInManager(flows: {
-      'standard': CheckInFlow(name: 'standard', questions: []),
-      'check_in': CheckInFlow(name: 'check_in', questions: [
-        _buildQuestion(
-          "How were your workouts this week?",
-          RatingBar(
-            ratingLabels: ratingsLabel,
-            onRatingChanged: (v) {
-              if (v - 1 < 2) {
-                _checkInManager.addQuestion(
-                  'What do you think is the main reason for this?',
-                  SelectableOptions(
-                    options: [
-                      SelectableOption(
-                          label: 'Lack of Sleep', value: 'lack_of_sleep'),
-                      SelectableOption(
-                          label: 'Poor Nutrition', value: 'poor_nutrition'),
-                      SelectableOption(
-                          label: 'No Warm-Up', value: 'no_warm_up'),
-                      SelectableOption(
-                          label: 'Mental Stress', value: 'mental_stress'),
-                      SelectableOption(
-                          label: 'Overtraining', value: 'overtraining'),
-                    ],
-                    selectedOption: null,
-                    onOptionSelected: (value) async {
-                      await standardCHATGPTResponse(
-                          'Give me 3 solutions for $value');
-                      _askCheckInQuestion();
-                    },
-                  ),
-                );
-              }
-
-              _askCheckInQuestion();
-            },
-          ),
-        ),
-        _buildQuestion("How are you sleeping?", Text('hi')),
-        _buildQuestion("How is your diet?", Text('test')),
-      ]),
+    _chatFlowsManager = ChatFlowsManager(flows: {
+      'standard': ChatFlow(name: 'standard', questions: []),
+      'check_in': ChatFlow(name: 'check_in', questions: []),
     });
 
-    _checkInManager.startFlow(widget.flowString);
+    _questionBuilders = QuestionBuilders(
+      ref,
+      _chatFlowsManager,
+      _openAI,
+      ratingsLabel,
+    );
+
+    _initializeChatFlowManager();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      
+      ref.read(chatProvider.notifier).printState();
       userName =
           await ref.read(getUserProvider.future).then((user) => user!.name);
       _handleInitialMessage();
     });
+  }
 
-    super.initState();
+  void _initializeChatFlowManager() {
+    _chatFlowsManager.flows['check_in']?.questions = [
+      _questionBuilders.buildWorkoutQuestion(),
+      _questionBuilders.buildSleepQuestion(),
+      _questionBuilders.buildDietQuestion(),
+    ];
+
+    _chatFlowsManager.startFlow(widget.flowString);
   }
 
   Future<void> _handleInitialMessage() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulated initial message
-    ChatMessage message = ChatMessage(
-      text: "Hi, I'm your assistant. How can I help you today?",
-      isSentByMe: false,
-      timestamp: DateTime.now(),
-    );
-
-    setState(() {
-      _messages.insert(0, message);
-      _isLoading = false;
-    });
-
-    if (_checkInManager.currentFlow.name != 'standard') {
-      _askCheckInQuestion();
-    }
-  }
-
-  void _askCheckInQuestion() {
-    if (_checkInManager.currentFlow.questions.isNotEmpty) {
-      var nextQuestion = _checkInManager.currentFlow.questions.removeAt(0);
-
+    if (_chatFlowsManager.currentFlow.name != 'standard') {
+      _questionBuilders.askCheckInQuestion();
+    } else {
+      // Simulated initial message
       ChatMessage message = ChatMessage(
-        text: nextQuestion['question'],
+        text: "Hi, I'm your assistant. How can I help you today?",
         isSentByMe: false,
         timestamp: DateTime.now(),
-        item: nextQuestion['widget'],
       );
 
-      setState(() {
-        _messages.insert(0, message);
-      });
+
+      ref.read(chatProvider.notifier).addMessage(message);
+      ref.read(chatProvider.notifier).setLoading(false);
     }
   }
 
@@ -145,13 +103,10 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
       isSentByMe: true,
       timestamp: DateTime.now(),
     );
+    ref.read(chatProvider.notifier).addMessage(prompt);
 
-    setState(() {
-      _messages.insert(0, prompt);
-    });
-
-    if (_checkInManager.currentFlow.name != 'standard') {
-      _askCheckInQuestion();
+    if (_chatFlowsManager.currentFlow.name != 'standard') {
+      _questionBuilders.askCheckInQuestion();
     } else {
       // Simulated ChatGPT response
       ChatMessage response = ChatMessage(
@@ -160,54 +115,20 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
         timestamp: DateTime.now(),
       );
 
-      setState(() {
-        _messages.insert(0, response);
-        _isLoading = false;
-      });
+      ref.read(chatProvider.notifier).addMessage(response);
+      ref.read(chatProvider.notifier).setLoading(false);
     }
   }
 
-  Map<String, dynamic> _buildQuestion(String question, Widget widget) {
-    return {
-      'question': question,
-      'widget': widget,
-    };
-  }
-
-  Future<void> standardCHATGPTResponse(String text) async {
-    final request = ChatCompleteText(
-      messages: [Messages(role: Role.user, content: text)],
-      maxToken: 200,
-      model:
-          ChatModelFromValue(model: 'ft:gpt-3.5-turbo-0613:personal::9KMlAHyw'),
-    );
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final response = await _openAI.onChatCompletion(request: request);
-
-    ChatMessage message = ChatMessage(
-      text: response!.choices.first.message!.content.trim(),
-      isSentByMe: false,
-      timestamp: DateTime.now(),
-    );
-
-    setState(() {
-      _messages.insert(0, message);
-      _isLoading = false;
-    });
-  }
-
   Widget _buildChatList() {
+    final messages = ref.watch(chatProvider).messages;
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
         reverse: true,
-        itemCount: _messages.length,
+        itemCount: messages.length,
         itemBuilder: (_, int index) {
-          ChatMessage message = _messages[index];
+          ChatMessage message = messages[index];
           return _buildChatBubble(message);
         },
       ),
@@ -284,6 +205,7 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
                         ),
                   const SizedBox(height: 12),
                   if (message.item != null) message.item!,
+                  const SizedBox(height: 12),
                   Text(
                     '${dateFormat.format(message.timestamp)} at ${timeFormat.format(message.timestamp)}',
                     style: TextStyle(
@@ -302,6 +224,7 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
   }
 
   Widget _buildChatComposer() {
+    bool isLoading = ref.watch(chatProvider).isLoading;
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: 8,
@@ -314,14 +237,14 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
               controller: _textController,
               decoration: InputDecoration.collapsed(
                 hintText: 'Type a message',
-                enabled: !_isLoading,
+                enabled: !isLoading,
               ),
-              onSubmitted: _isLoading ? null : _handleSubmit,
+              onSubmitted: isLoading ? null : _handleSubmit,
             ),
           ),
           IconButton(
             icon: const Icon(Icons.send),
-            onPressed: _isLoading
+            onPressed: isLoading
                 ? null
                 : () => _handleSubmit(
                       _textController.text,
@@ -334,29 +257,40 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 32),
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                _buildChatList(),
-                if (_isLoading)
-                  LoadingAnimationWidget.staggeredDotsWave(
-                    color: Colors.white,
-                    size: 50,
+    return WillPopScope(
+      onWillPop: () {
+        ref.read(chatProvider.notifier).printState();
+        ref.read(chatProvider.notifier).clearState();
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Text('Time to Check in!'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(bottom: 32),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  _buildChatList(),
+                  if (ref.watch(chatProvider).isLoading)
+                    LoadingAnimationWidget.staggeredDotsWave(
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  const Divider(height: 1.0),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: _buildChatComposer(),
                   ),
-                const Divider(height: 1.0),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                  ),
-                  child: _buildChatComposer(),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

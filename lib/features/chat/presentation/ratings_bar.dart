@@ -3,25 +3,22 @@ import 'package:flutter/material.dart';
 class RatingBar extends StatefulWidget {
   final List<String> ratingLabels;
   final ValueChanged<int> onRatingChanged;
-
-  RatingBar({
-    required this.ratingLabels,
-    required this.onRatingChanged,
-  });
+  final int selectedOption;
+  const RatingBar(
+      {super.key,
+      required this.ratingLabels,
+      required this.onRatingChanged,
+      required this.selectedOption});
 
   @override
   _RatingBarState createState() => _RatingBarState();
 }
 
 class _RatingBarState extends State<RatingBar> {
-  int _selectedRating = 0;
-
   void _rate(int rating) {
-    setState(() {
-      _selectedRating = rating;
-    });
     widget.onRatingChanged(rating);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,17 +37,17 @@ class _RatingBarState extends State<RatingBar> {
                   children: [
                     Icon(
                       Icons.star,
-                      color: _selectedRating >= rating
+                      color:widget.selectedOption >= rating
                           ? Colors.amber
                           : Colors.grey,
                       size: 40,
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       widget.ratingLabels[index],
                       style: TextStyle(
                         fontSize: 12,
-                        color: _selectedRating >= rating
+                        color:widget.selectedOption>= rating
                             ? Colors.amber
                             : Colors.grey,
                       ),
