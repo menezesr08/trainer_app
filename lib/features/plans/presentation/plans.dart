@@ -98,7 +98,7 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                     onPressed: () {
                        GoRouter.of(context).push('/chat/check_in');
                     },
-                    child: Text('Click to chat')),
+                    child: const Text('Click to chat')),
               ],
             ),
           );

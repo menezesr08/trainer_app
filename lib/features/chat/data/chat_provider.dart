@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:trainer_app/features/chat/model/model.dart';
 
 class ChatState {
   final List<ChatMessage> messages;
   final bool isLoading;
+  bool enableNextButton;
   final int workoutRating;
   final int sleepRating;
   final int dietRating;
@@ -11,36 +13,37 @@ class ChatState {
   final String? sleepReason;
   final String? dietReason;
 
-  ChatState({
-    required this.messages,
-    required this.isLoading,
-    required this.workoutRating,
-    required this.sleepRating,
-    required this.dietRating,
-    required this.workoutReason,
-    required this.sleepReason,
-    required this.dietReason,
-  });
+  ChatState(
+      {required this.messages,
+      required this.isLoading,
+      required this.workoutRating,
+      required this.sleepRating,
+      required this.dietRating,
+      required this.workoutReason,
+      required this.sleepReason,
+      required this.dietReason,
+      required this.enableNextButton});
 
-  ChatState copyWith({
-    List<ChatMessage>? messages,
-    bool? isLoading,
-    int? workoutRating,
-    int? sleepRating,
-    int? dietRating,
-    String? workoutReason,
-    String? sleepReason,
-    String? dietReason,
-  }) {
+  ChatState copyWith(
+      {List<ChatMessage>? messages,
+      bool? isLoading,
+      int? workoutRating,
+      int? sleepRating,
+      int? dietRating,
+      String? workoutReason,
+      String? sleepReason,
+      String? dietReason,
+      bool? enableNextButton}) {
     return ChatState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       workoutRating: workoutRating ?? this.workoutRating,
       sleepRating: sleepRating ?? this.sleepRating,
       dietRating: dietRating ?? this.dietRating,
-      workoutReason: workoutReason,
-      sleepReason: sleepReason,
-      dietReason: dietReason,
+      workoutReason: workoutReason ?? this.workoutReason,
+      sleepReason: sleepReason ?? this.sleepReason,
+      dietReason: dietReason ?? this.dietReason,
+      enableNextButton: enableNextButton ?? this.enableNextButton,
     );
   }
 }
@@ -56,6 +59,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
           workoutReason: null,
           sleepReason: null,
           dietReason: null,
+          enableNextButton: false,
         ));
 
   void addMessage(ChatMessage message) {
@@ -74,6 +78,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
       workoutReason: null,
       sleepReason: null,
       dietReason: null,
+      enableNextButton: false,
     );
 
     return true;
@@ -81,6 +86,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
 
   void setLoading(bool isLoading) {
     state = state.copyWith(isLoading: isLoading);
+  }
+
+  void setEnableNextButton(bool enableNextButton) {
+    state = state.copyWith(enableNextButton: enableNextButton);
   }
 
   void updateWorkoutRating(int rating) {

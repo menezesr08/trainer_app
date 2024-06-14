@@ -21,7 +21,7 @@ final locationServiceProvider = Provider<LocationService>.internal(
 );
 
 typedef LocationServiceRef = ProviderRef<LocationService>;
-String _$locationHash() => r'0d5c7f760851f671e1ca474f7f0c6d500ad7a208';
+String _$locationHash() => r'07c10edfa04c451337ef5cff5a51d3d299369b02';
 
 /// See also [location].
 @ProviderFor(location)

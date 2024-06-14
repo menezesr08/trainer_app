@@ -19,7 +19,6 @@ class SelectableOptions extends StatefulWidget {
 class _SelectableOptionsState extends State<SelectableOptions> {
   @override
   Widget build(BuildContext context) {
-
   
     return Wrap(
       spacing: 10.0, // Horizontal spacing between options

@@ -6,7 +6,7 @@ part of 'firebase_auth_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$createUserHash() => r'f821a26dd5bc3e89f3727834054c8042f83218bf';
+String _$createUserHash() => r'0b3f046f328609b1ef14e4c97525830cc374afe3';
 
 /// Copied from Dart SDK
 class _SystemHash {

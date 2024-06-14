@@ -4,14 +4,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:trainer_app/features/chat/data/chat_provider.dart';
 import 'package:trainer_app/features/chat/model/model.dart';
+import 'package:trainer_app/features/chat/presentation/chat_widgets/youtube_video.dart';
 import 'package:trainer_app/features/chat/presentation/question_builders.dart';
-
-import 'package:trainer_app/features/chat/providers.dart';
 import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
 import 'package:trainer_app/features/plans/domain/flow.dart';
 import 'package:trainer_app/features/user/data/user_repository.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({
@@ -32,6 +31,8 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
   late ChatFlowsManager _chatFlowsManager;
   late QuestionBuilders _questionBuilders;
   late String userName;
+  late ChatNotifier? chatNotifier;
+  late ChatState? chatState;
   final ratingsLabel = ['Very Poor', 'Poor', 'Average', 'Good', 'Excellent'];
 
   @override
@@ -50,20 +51,15 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
       'check_in': ChatFlow(name: 'check_in', questions: []),
     });
 
-    _questionBuilders = QuestionBuilders(
-      ref,
-      _chatFlowsManager,
-      _openAI,
-      ratingsLabel,
-    );
-
-    _initializeChatFlowManager();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      
-      ref.read(chatProvider.notifier).printState();
+      chatNotifier = ref.read(chatProvider.notifier);
+      chatState = ref.watch(chatProvider);
       userName =
           await ref.read(getUserProvider.future).then((user) => user!.name);
+
+      _questionBuilders = QuestionBuilders(ref, _chatFlowsManager, _openAI,
+          ratingsLabel, _standardCHATGPTResponse);
+      _initializeChatFlowManager();
       _handleInitialMessage();
     });
   }
@@ -89,10 +85,30 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
         timestamp: DateTime.now(),
       );
 
-
-      ref.read(chatProvider.notifier).addMessage(message);
-      ref.read(chatProvider.notifier).setLoading(false);
+      chatNotifier?.addMessage(message);
+      chatNotifier?.setLoading(false);
     }
+  }
+
+  Future<void> _standardCHATGPTResponse(String text) async {
+    final request = ChatCompleteText(
+      messages: [Messages(role: Role.user, content: text)],
+      maxToken: 200,
+      model:
+          ChatModelFromValue(model: 'ft:gpt-3.5-turbo-0613:personal::9KMlAHyw'),
+    );
+    chatNotifier?.setLoading(true);
+    final response = await _openAI.onChatCompletion(request: request);
+
+    ChatMessage message = ChatMessage(
+      text: response!.choices.first.message!.content.trim(),
+      isSentByMe: false,
+      timestamp: DateTime.now(),
+    );
+
+    chatNotifier?.setLoading(false);
+
+    chatNotifier?.addMessage(message);
   }
 
   Future<void> _handleSubmit(String text) async {
@@ -103,20 +119,12 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
       isSentByMe: true,
       timestamp: DateTime.now(),
     );
-    ref.read(chatProvider.notifier).addMessage(prompt);
+    chatNotifier?.addMessage(prompt);
 
     if (_chatFlowsManager.currentFlow.name != 'standard') {
       _questionBuilders.askCheckInQuestion();
     } else {
-      // Simulated ChatGPT response
-      ChatMessage response = ChatMessage(
-        text: "This is a response from ChatGPT.",
-        isSentByMe: false,
-        timestamp: DateTime.now(),
-      );
-
-      ref.read(chatProvider.notifier).addMessage(response);
-      ref.read(chatProvider.notifier).setLoading(false);
+      _standardCHATGPTResponse(text);
     }
   }
 
@@ -129,15 +137,13 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
         itemCount: messages.length,
         itemBuilder: (_, int index) {
           ChatMessage message = messages[index];
-          return _buildChatBubble(message);
+          return _buildChatBubble(message, index);
         },
       ),
     );
   }
 
-  Widget _buildChatBubble(
-    ChatMessage message,
-  ) {
+  Widget _buildChatBubble(ChatMessage message, int index) {
     final isSentByMe = message.isSentByMe;
     final dateFormat = DateFormat('MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
@@ -164,7 +170,11 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
                   ? const EdgeInsets.only(left: 100)
                   : const EdgeInsets.only(right: 100),
               decoration: BoxDecoration(
-                color: isSentByMe ? Colors.white : Colors.black,
+                color: isSentByMe
+                    ? Colors.white
+                    : index == 0
+                        ? Colors.black
+                        : Colors.black.withOpacity(0.1),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(12.0),
                   topRight: const Radius.circular(12.0),
@@ -257,16 +267,18 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    chatNotifier = ref.read(chatProvider.notifier);
+    chatState = ref.watch(chatProvider);
     return WillPopScope(
-      onWillPop: () {
-        ref.read(chatProvider.notifier).printState();
-        ref.read(chatProvider.notifier).clearState();
+      onWillPop: () async {
+        chatNotifier?.printState();
+        await chatNotifier?.clearState();
         return Future.value(true);
       },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: const Text('Time to Check in!'),
+          title: const Text('Ask me something'),
         ),
         body: Padding(
           padding: const EdgeInsets.only(bottom: 32),
@@ -275,10 +287,35 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
               Column(
                 children: [
                   _buildChatList(),
-                  if (ref.watch(chatProvider).isLoading)
+                  if (chatState?.isLoading ?? false)
                     LoadingAnimationWidget.staggeredDotsWave(
                       color: Colors.white,
                       size: 50,
+                    ),
+                  if (chatState?.enableNextButton ?? false)
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white, // Text color
+                          backgroundColor:
+                              Colors.black, // Button background color
+                          side: BorderSide(
+                              color: Colors.white,
+                              width: 2), // Border color and width
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12), // Button padding
+                        ),
+                        onPressed: () {
+                          // Define the action on button press here
+                          chatNotifier?.setEnableNextButton(false);
+                          _questionBuilders.askCheckInQuestion();
+                        },
+                        child: Text(
+                          'Next',
+                          style: TextStyle(fontSize: 16), // Text style
+                        ),
+                      ),
                     ),
                   const Divider(height: 1.0),
                   Container(
@@ -294,49 +331,5 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
         ),
       ),
     );
-  }
-}
-
-class YouTubeTextWithThumbnails extends StatelessWidget {
-  final String text;
-
-  const YouTubeTextWithThumbnails({Key? key, required this.text})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final List<String> words = text.split(' ');
-    final List<Widget> widgets = [];
-
-    for (var word in words) {
-      if (word.startsWith('https://www.youtube.com/watch?v=')) {
-        final videoId =
-            word.substring('https://www.youtube.com/watch?v='.length);
-
-        YoutubePlayerController controller = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(
-            autoPlay: true,
-            mute: true,
-          ),
-        );
-        widgets.add(
-          YoutubePlayer(
-            controller: controller,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: Colors.amber,
-            progressColors: const ProgressBarColors(
-              playedColor: Colors.amber,
-              handleColor: Colors.amberAccent,
-            ),
-          ),
-        );
-      } else {
-        widgets.add(Text(word));
-      }
-      widgets.add(SizedBox(width: 2)); // Add space between widgets
-    }
-
-    return Wrap(children: widgets);
   }
 }

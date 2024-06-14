@@ -2,7 +2,7 @@ import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/features/chat/model/model.dart';
-import 'package:trainer_app/features/chat/providers.dart';
+import 'package:trainer_app/features/chat/data/chat_provider.dart';
 import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
 import 'package:trainer_app/features/chat/presentation/ratings_bar.dart';
 import 'package:trainer_app/features/chat/presentation/selectable_options.dart';
@@ -12,28 +12,36 @@ class QuestionBuilders {
   final ChatFlowsManager chatFlowsManager;
   final OpenAI openAI;
   final List<String> ratingsLabel;
+  final Future<void> Function(String) standardCHATGPTResponse;
 
-  QuestionBuilders(
-      this.ref, this.chatFlowsManager, this.openAI, this.ratingsLabel);
+  late ChatNotifier chatNotifier;
+  late ChatState chatState;
+
+  QuestionBuilders(this.ref, this.chatFlowsManager, this.openAI,
+      this.ratingsLabel, this.standardCHATGPTResponse) {
+    chatNotifier = ref.read(chatProvider.notifier);
+    chatState = ref.watch(chatProvider);
+  }
 
   Map<String, dynamic> buildWorkoutQuestion() {
     return _buildQuestion(
       "How were your workouts this week?",
       Consumer(builder: (context, ref, child) {
-        final workoutRating = ref.watch(chatProvider).workoutRating;
-
+        chatNotifier = ref.read(chatProvider.notifier);
+        chatState = ref.watch(chatProvider);
         return RatingBar(
-          selectedOption: workoutRating,
+          selectedOption: chatState.workoutRating,
           ratingLabels: ratingsLabel,
           onRatingChanged: (v) {
-            ref.read(chatProvider.notifier).updateWorkoutRating(v);
+            chatNotifier.updateWorkoutRating(v);
+            chatNotifier.printState();
             if (v - 1 < 2) {
               const type = 'fitness';
               chatFlowsManager
                   .addQuestion('What do you think is the main reason for this?',
                       Consumer(builder: (context, ref, child) {
-                final workoutReason = ref.watch(chatProvider).workoutReason;
-                print( 'read consumer $workoutReason');
+                chatNotifier = ref.read(chatProvider.notifier);
+                chatState = ref.watch(chatProvider);
                 return SelectableOptions(
                   options: [
                     SelectableOption(
@@ -50,14 +58,13 @@ class QuestionBuilders {
                     SelectableOption(
                         label: 'Overtraining', value: '${type}_overtraining'),
                   ],
-                  selectedOption: workoutReason,
+                  selectedOption: chatState.workoutReason,
                   onOptionSelected: (v) async {
-                       print('onOptionSelected $v');
-                    ref.read(chatProvider.notifier).updateWorkoutReason(v);
-                    ref.read(chatProvider.notifier).printState();
-                    await _standardCHATGPTResponse(
+                    chatNotifier.updateWorkoutReason(v);
+                    chatNotifier.printState();
+                    await standardCHATGPTResponse(
                         'Give me 3 solutions for $v - short answer');
-                    askCheckInQuestion();
+                    chatNotifier.setEnableNextButton(true);
                   },
                 );
               }));
@@ -73,18 +80,22 @@ class QuestionBuilders {
     return _buildQuestion(
       "How are you sleeping?",
       Consumer(builder: (context, ref, child) {
-        final sleepRating = ref.watch(chatProvider).sleepRating;
-        final sleepReason = ref.watch(chatProvider).sleepReason;
+        chatNotifier = ref.read(chatProvider.notifier);
+        chatState = ref.watch(chatProvider);
+        chatNotifier.printState();
         return RatingBar(
-          selectedOption: sleepRating,
+          selectedOption: chatState.sleepRating,
           ratingLabels: ratingsLabel,
           onRatingChanged: (v) {
-            ref.read(chatProvider.notifier).updateSleepRating(v);
+            chatNotifier.updateSleepRating(v);
+
             if (v - 1 < 2) {
               const type = 'lack_of_sleep';
               chatFlowsManager
                   .addQuestion('What do you think is the main reason for this?',
                       Consumer(builder: (context, ref, child) {
+                chatNotifier = ref.read(chatProvider.notifier);
+                chatState = ref.watch(chatProvider);
                 return SelectableOptions(
                   options: [
                     SelectableOption(
@@ -102,12 +113,12 @@ class QuestionBuilders {
                         label: 'Medical Conditions',
                         value: '${type}_medical_conditions'),
                   ],
-                  selectedOption: sleepReason,
+                  selectedOption: chatState.sleepReason,
                   onOptionSelected: (v) async {
-                    ref.read(chatProvider.notifier).updateSleepReason(v);
-                    await _standardCHATGPTResponse(
+                    chatNotifier.updateSleepReason(v);
+                    await standardCHATGPTResponse(
                         'Give me 3 solutions for $v - short answer');
-                    askCheckInQuestion();
+                    chatNotifier.setEnableNextButton(true);
                   },
                 );
               }));
@@ -123,18 +134,20 @@ class QuestionBuilders {
     return _buildQuestion(
       "How is your diet?",
       Consumer(builder: (context, ref, child) {
-        final dietRating = ref.watch(chatProvider).dietRating;
-        final dietReason = ref.watch(chatProvider).dietReason;
+        chatNotifier = ref.read(chatProvider.notifier);
+        chatState = ref.watch(chatProvider);
         return RatingBar(
-          selectedOption: dietRating,
+          selectedOption: chatState.dietRating,
           ratingLabels: ratingsLabel,
           onRatingChanged: (v) {
-            ref.read(chatProvider.notifier).updateDietRating(v);
+            chatNotifier.updateDietRating(v);
             if (v - 1 < 2) {
               const type = 'poor_diet';
               chatFlowsManager
                   .addQuestion('What do you think is the main reason for this?',
                       Consumer(builder: (context, ref, child) {
+                chatNotifier = ref.read(chatProvider.notifier);
+                chatState = ref.watch(chatProvider);
                 return SelectableOptions(
                   options: [
                     SelectableOption(
@@ -149,12 +162,13 @@ class QuestionBuilders {
                         label: 'Lack of Education ',
                         value: 'new_recipes_ideas'),
                   ],
-                  selectedOption: dietReason,
+                  selectedOption: chatState.dietReason,
                   onOptionSelected: (v) async {
-                    ref.read(chatProvider.notifier).updateDietReason(v);
-                    await _standardCHATGPTResponse(
+                    chatNotifier.updateDietReason(v);
+                    chatNotifier.printState();
+                    await standardCHATGPTResponse(
                         'Give me 3 solutions for $v - short answer');
-                    askCheckInQuestion();
+                    chatNotifier.setEnableNextButton(true);
                   },
                 );
               }));
@@ -173,27 +187,6 @@ class QuestionBuilders {
     };
   }
 
-  Future<void> _standardCHATGPTResponse(String text) async {
-    final request = ChatCompleteText(
-      messages: [Messages(role: Role.user, content: text)],
-      maxToken: 200,
-      model:
-          ChatModelFromValue(model: 'ft:gpt-3.5-turbo-0613:personal::9KMlAHyw'),
-    );
-    ref.read(chatProvider.notifier).setLoading(true);
-    final response = await openAI.onChatCompletion(request: request);
-
-    ChatMessage message = ChatMessage(
-      text: response!.choices.first.message!.content.trim(),
-      isSentByMe: false,
-      timestamp: DateTime.now(),
-    );
-
-    ref.read(chatProvider.notifier).setLoading(false);
-
-    ref.read(chatProvider.notifier).addMessage(message);
-  }
-
   void askCheckInQuestion() {
     if (chatFlowsManager.currentFlow.questions.isNotEmpty) {
       var nextQuestion = chatFlowsManager.currentFlow.questions.removeAt(0);
@@ -205,7 +198,7 @@ class QuestionBuilders {
         item: nextQuestion['widget'],
       );
 
-      ref.read(chatProvider.notifier).addMessage(message);
+      chatNotifier.addMessage(message);
     } else {
       ChatMessage message = ChatMessage(
         text: 'Thanks for checking in! Have a great day',
@@ -213,7 +206,8 @@ class QuestionBuilders {
         timestamp: DateTime.now(),
       );
 
-      ref.read(chatProvider.notifier).addMessage(message);
+      chatNotifier.addMessage(message);
+      chatNotifier.printState();
     }
   }
 }
