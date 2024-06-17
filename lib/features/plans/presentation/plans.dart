@@ -44,7 +44,7 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
     final plansProvider = ref.watch(planRepositoryProvider);
     final notificationProvider = ref.read(notificationServiceProvider);
     notificationProvider.initialize(context);
-    // notificationProvider.scheduleNotificationsEvery5Minutes();
+    notificationProvider.checkAndScheduleNotification();
 
     final plans = ref.watch(getPlansStream(userId!));
 
@@ -96,7 +96,7 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                     .toList(),
                 ElevatedButton(
                     onPressed: () {
-                       GoRouter.of(context).push('/chat/check_in');
+                      GoRouter.of(context).push('/chat/standard');
                     },
                     child: const Text('Click to chat')),
               ],

@@ -300,10 +300,10 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
                           foregroundColor: Colors.white, // Text color
                           backgroundColor:
                               Colors.black, // Button background color
-                          side: BorderSide(
+                          side: const BorderSide(
                               color: Colors.white,
                               width: 2), // Border color and width
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12), // Button padding
                         ),
                         onPressed: () {
@@ -311,7 +311,7 @@ class _ConsumerChatPageState extends ConsumerState<ChatPage> {
                           chatNotifier?.setEnableNextButton(false);
                           _questionBuilders.askCheckInQuestion();
                         },
-                        child: Text(
+                        child: const Text(
                           'Next',
                           style: TextStyle(fontSize: 16), // Text style
                         ),
