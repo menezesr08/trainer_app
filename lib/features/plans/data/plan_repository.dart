@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
@@ -11,14 +10,17 @@ class PlanRepository {
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
-  void addPlanToFirestore(int? planId, String userId, String planName,
+  void addPlanToFirestore(Plan plan, String userId,
       List<Workout> workoutsToSave) async {
-    final id = planId ?? await generateUniqueId();
+    final id = plan.id ?? await generateUniqueId();
 
     Plan newOrUpdatedPlan = Plan(
       id: id,
-      name: planName,
+      name: plan.name,
       workouts: workoutsToSave,
+      scheduledAt: plan.scheduledAt,
+      isRecurring: plan.isRecurring,
+      recurringType: plan.recurringType
     );
     try {
       await _firestore

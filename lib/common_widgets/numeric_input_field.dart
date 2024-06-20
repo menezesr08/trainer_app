@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,6 +10,10 @@ class NumericInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      style: TextStyle(
+        color: Colors.purple, // Change this to your desired text color
+        fontSize: 18, // You can also change the font size
+      ),
       controller: controller,
       decoration: InputDecoration(
         filled: true,

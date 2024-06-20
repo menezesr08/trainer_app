@@ -53,7 +53,6 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
         onPressed: () {
           GoRouter.of(context).go('/plans/createPlan');
         },
-        backgroundColor: const Color(0xFF797c82),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -90,10 +89,14 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                   height: 30,
                 ),
                 ...plans
-                    .map((e) => PlanCard(
+                    .map(
+                      (e) => PlanCard(
                         plan: e,
-                        onDelete: () => plansProvider.deletePlan(e.id, userId)))
+                        onDelete: () => plansProvider.deletePlan(e.id!, userId),
+                      ),
+                    )
                     .toList(),
+          
                 ElevatedButton(
                     onPressed: () {
                       GoRouter.of(context).push('/chat/standard');

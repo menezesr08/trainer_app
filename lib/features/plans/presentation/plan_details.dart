@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/common_widgets/numeric_input_field.dart';
-import 'package:trainer_app/constants/colors.dart';
 import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/plans_providers.dart';
-import 'package:trainer_app/features/user/data/user_repository.dart';
-import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 import 'package:trainer_app/features/workouts/extensions.dart';
 
 class PlanDetails extends ConsumerStatefulWidget {
-  const PlanDetails({super.key, required this.planName, this.plan});
-  final String planName;
-  final Plan? plan;
+  const PlanDetails({
+    super.key,
+    required this.plan,
+  });
+
+  final Plan plan;
 
   @override
   ConsumerState<PlanDetails> createState() => _PlanDetailsState();
@@ -28,9 +28,8 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
     final planRepository = ref.read(planRepositoryProvider);
 
     planRepository.addPlanToFirestore(
-      widget.plan?.id,
+      widget.plan,
       userId!,
-      widget.planName,
       workoutsToSave,
     );
   }
@@ -41,26 +40,11 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
     _loadData();
   }
 
-  List<Workout> convertBaseWorkouts(List<BaseWorkout> baseWorkouts) {
-    List<Workout> workouts = baseWorkouts.map((b) {
-      return Workout(
-        id: b.id,
-        name: b.name,
-        reps: 0, // Set default value for reps
-        sets: 0, // Set default value for sets
-        weight: 0, // Set default value for weight
-      );
-    }).toList();
-
-    return workouts;
-  }
-
   Future<void> _loadData() async {
-    final sWorkouts = ref.read(selectedWorkoutsForPlan);
-    final workouts = widget.plan?.workouts ?? convertBaseWorkouts(sWorkouts);
     await Future.delayed(Duration.zero);
-
-    ref.read(updatedWorkoutsForPlan.notifier).update((state) => workouts);
+    ref
+        .read(updatedWorkoutsForPlan.notifier)
+        .update((state) => widget.plan.workouts);
   }
 
   @override
@@ -73,70 +57,70 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
           return true; // Return true to allow the back operation
         },
         child: Scaffold(
-          body: Container(
-            color: Colors.white,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  'Fill in what your sessions look like',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                  const Text(
-                    'Fill in what your sessions look like',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  ...workouts.map((element) {
-                    return Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        ExerciseInput(
-                          workout: element,
+                ),
+                ...workouts.map((element) {
+                  return Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      ExerciseInput(
+                        workout: element,
+                      ),
+                    ],
+                  );
+                }).toList(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          ref
+                              .read(updatedWorkoutsForPlan.notifier)
+                              .update((state) => []);
+                          GoRouter.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                          size: 30,
                         ),
-                      ],
-                    );
-                  }).toList(),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            GoRouter.of(context).pop();
-                          },
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () {
-                            savePlanToFirestore();
-                            ref
-                                .read(updatedWorkoutsForPlan.notifier)
-                                .update((state) => []);
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          savePlanToFirestore();
+                          ref
+                              .read(updatedWorkoutsForPlan.notifier)
+                              .update((state) => []);
 
-                            Future.delayed(Duration.zero, () {
-                              GoRouter.of(context).go('/plans');
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.check,
-                            color: Colors.black,
-                            size: 30,
-                          ),
+                          Future.delayed(Duration.zero, () {
+                            GoRouter.of(context).go('/plans');
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.check,
+                          color: Colors.black,
+                          size: 30,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -169,9 +153,9 @@ class _ExerciseInputState extends ConsumerState<ExerciseInput> {
     reps = widget.workout.reps;
     weight = widget.workout.weight;
     sets = widget.workout.sets;
-    _repsController.text = reps.toString();
-    _weightController.text = weight.toString();
-    _setsController.text = sets.toString();
+    _repsController.text = reps > 0 ? reps.toString() : '';
+    _weightController.text = weight > 0 ? weight.toString() : '';
+    _setsController.text = sets > 0 ? sets.toString() : '';
 
     setState(() {});
   }
@@ -205,16 +189,7 @@ class _ExerciseInputState extends ConsumerState<ExerciseInput> {
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.purple.withOpacity(0.9),
-                  Colors.black.withOpacity(0.9), // Adjust opacity as needed
-                  // Adjust opacity as needed
-                ],
-                stops: const [0.0, 0.5],
-              ),
+              color: Colors.black,
               borderRadius: BorderRadius.circular(20.0),
             ),
             child:

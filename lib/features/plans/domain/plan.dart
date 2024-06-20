@@ -2,12 +2,22 @@ import 'package:equatable/equatable.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 class Plan extends Equatable {
-  const Plan({required this.id, required this.name, required this.workouts});
+  const Plan({
+    required this.name,
+    required this.workouts,
+    required this.scheduledAt,
+    this.id,
+    this.isRecurring = false,
+    this.recurringType = "Weekly"
+  });
   final String name;
   final List<Workout> workouts;
-  final int id;
+  final int? id;
+  final DateTime? scheduledAt;
+  final bool? isRecurring;
+  final String? recurringType;
   @override
-  List<Object> get props => [id, name, workouts];
+  List<Object> get props => [id!, name, workouts];
 
   @override
   bool get stringify => true;
@@ -22,12 +32,23 @@ class Plan extends Equatable {
         .map((workoutData) => Workout.fromMap(workoutData))
         .toList();
 
-    final id = data['id'] as int;
+    final scheduledAtString = data['scheduledAt'] as String?;
+    final DateTime? scheduledAt =
+        scheduledAtString != null ? DateTime.parse(scheduledAtString) : null;
+
+    final id = data['id'] as int?;
+
+    final isRecurring = data['isRecurring'] as bool?;
+
+    final recurringType = data['recurringType'] as String?;
 
     return Plan(
       id: id,
       name: name,
       workouts: workouts,
+      scheduledAt: scheduledAt,
+      isRecurring: isRecurring,
+      recurringType: recurringType
     );
   }
 
@@ -35,7 +56,28 @@ class Plan extends Equatable {
     return {
       'id': id,
       'name': name,
-      'workouts': workouts.map((workout) => workout.toMap()).toList()
+      'workouts': workouts.map((workout) => workout.toMap()).toList(),
+      'scheduledAt': scheduledAt?.toIso8601String(),
+      'isRecurring': isRecurring,
+      'recurringType': recurringType
     };
+  }
+
+  Plan copyWith({
+    String? name,
+    List<Workout>? workouts,
+    int? id,
+    DateTime? scheduledAt,
+    bool? isRecurring,
+    String? recurringType,
+  }) {
+    return Plan(
+      name: name ?? this.name,
+      workouts: workouts ?? this.workouts,
+      id: id ?? this.id,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
+      isRecurring: isRecurring ?? this.isRecurring,
+      recurringType: recurringType ?? this.recurringType,
+    );
   }
 }

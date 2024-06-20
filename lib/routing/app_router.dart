@@ -172,14 +172,12 @@ GoRouter goRouter(GoRouterRef ref) {
                       ),
                     ),
                     GoRoute(
-                      path: 'detail/:planName',
+                      path: 'detail',
                       name: AppRoute.detail.name,
                       pageBuilder: (context, state) {
-                        final planName = state.pathParameters['planName'];
-                        final plan = state.extra as Plan?;
+                        final plan = state.extra as Plan;
                         return NoTransitionPage(
                           child: PlanDetails(
-                            planName: planName!,
                             plan: plan,
                           ),
                         );

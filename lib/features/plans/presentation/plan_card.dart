@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
@@ -31,7 +30,7 @@ class PlanCard extends StatelessWidget {
                       onPressed: () {
                         GoRouter.of(context).pop();
                         GoRouter.of(context).push(
-                          '/plans/detail/${plan.name}',
+                          '/plans/detail',
                           extra: plan,
                         );
                       },
@@ -51,7 +50,7 @@ class PlanCard extends StatelessWidget {
             );
           },
           child: Card(
-            color: Color(0xff6a040f),
+            shadowColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
@@ -75,8 +74,6 @@ class PlanCard extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold),
                     )),
-                    SizedBox(height: 30,),
-                 
               ],
             ),
           ),
