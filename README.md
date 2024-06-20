@@ -27,3 +27,7 @@ Nutrition advice and meal planning
 
 Virtual personal training sessions
 
+
+
+https://github.com/menezesr08/trainer_app/assets/18615641/555501f9-14bf-4d67-950a-f443343c96a8
+
