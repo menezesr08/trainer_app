@@ -1,16 +1,33 @@
-# trainer_app
+# AI Trainer Demo
 
-A new Flutter project.
+Welcome to the AI Trainer Demo, a cutting-edge application designed to automate various tasks performed by a personal trainer. This project aims to provide users with an enhanced fitness experience through the power of AI and automation.
 
-## Getting Started
+## Features
+### AI Chat - Done
+Engage in conversations with an AI personal trainer to receive personalized fitness advice, workout suggestions, and answers to your fitness-related questions.
 
-This project is a starting point for a Flutter application.
+### Check-In Service - Done
+Automatically check-in with users to track their progress, provide motivation, and adjust workout plans based on their feedback and performance.
 
-A few resources to get you started if this is your first Flutter project:
+### Automated Plan Creation and Workout Scheduling - In Progress
+Streamline the process of creating workout plans and scheduling sessions. The AI will tailor plans based on user preferences, goals, and progress, ensuring a personalized and effective fitness regimen.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Gamified Workout Progress - In Progress
+Add an element of fun and competition to your fitness journey. Earn points, unlock achievements, and stay motivated as you progress through your workouts.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Leaderboard - In Progress
+Compare your progress with friends and other users. The leaderboard fosters a sense of community and healthy competition, pushing you to achieve your fitness goals.
+
+## Upcoming Features
+Integration with wearable devices for real-time tracking
+
+Advanced analytics and progress reports
+
+Nutrition advice and meal planning
+
+Virtual personal training sessions
+
+
+
+https://github.com/menezesr08/trainer_app/assets/18615641/555501f9-14bf-4d67-950a-f443343c96a8
+
