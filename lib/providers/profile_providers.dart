@@ -1,12 +1,14 @@
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfileRefreshNotifier extends StateNotifier<bool> {
-  ProfileRefreshNotifier() : super(false);
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+
+part 'profile_providers.g.dart';
+
+@Riverpod(keepAlive: true)
+class ProfileRefreshNotifier extends _$ProfileRefreshNotifier {
+  @override
+  bool build() => false;
 
   void refresh() => state = !state;
 }
-
-final profileRefreshProvider = StateNotifierProvider<ProfileRefreshNotifier, bool>((ref) {
-  return ProfileRefreshNotifier();
-});

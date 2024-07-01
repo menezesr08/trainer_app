@@ -3,6 +3,7 @@ import 'package:trainer_app/features/authentication/domain/create_user_params.da
 import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:trainer_app/features/user/domain/app_user.dart';
 import 'package:trainer_app/providers/auth_providers.dart';
+import 'package:trainer_app/providers/firestore_providers.dart';
 import 'package:trainer_app/providers/profile_providers.dart';
 part 'user_providers.g.dart';
 
@@ -33,7 +34,7 @@ Future<void> createUser(CreateUserRef ref, UserParams params) async {
 
 @Riverpod(keepAlive: true)
 UserRepository userRepository(UserRepositoryRef ref) {
-  return UserRepository();
+  return UserRepository(ref.watch(firestoreProvider));
 }
 
 @Riverpod(keepAlive: true)
@@ -41,7 +42,7 @@ Future<AppUser?> getUser(GetUserRef ref) {
   final userId = ref.watch(authRepositoryProvider).currentUser!.uid;
   final userRepo = ref.watch(userRepositoryProvider);
 
-  ref.watch(profileRefreshProvider);
+  ref.watch(profileRefreshNotifierProvider);
   return userRepo.getUser(userId);
 }
 

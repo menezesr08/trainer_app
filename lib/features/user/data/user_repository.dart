@@ -4,8 +4,9 @@ import 'package:trainer_app/features/user/domain/app_user.dart';
 
 
 class UserRepository {
-  UserRepository();
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  UserRepository(this._firestore);
+    final FirebaseFirestore _firestore;
+
   CollectionReference<Map<String, dynamic>> get _userCollection =>
       _firestore.collection('users');
 

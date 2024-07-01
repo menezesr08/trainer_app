@@ -51,7 +51,7 @@ class _ConsumerUpdateProfileState extends ConsumerState<UpdateProfile> {
 
     await userRepo.setUser(updatedUser);
 
-    ref.read(profileRefreshProvider.notifier).refresh();
+    ref.read(profileRefreshNotifierProvider.notifier).refresh();
   }
 
   @override

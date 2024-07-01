@@ -3,9 +3,8 @@ import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 
 class PlanRepository {
-  PlanRepository();
-
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  PlanRepository(this._firestore);
+  final FirebaseFirestore _firestore;
 
   void addPlanToFirestore(
       Plan plan, String userId, List<Workout> workoutsToSave) async {
