@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/features/insights/presentation/graph.dart';
 import 'package:trainer_app/features/insights/presentation/progress_bar.dart';
-import 'package:trainer_app/features/user/data/user_repository.dart';
 import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
 
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
+import 'package:trainer_app/providers/user_providers.dart';
 
 class ProgressData {
   final String category;

@@ -7,7 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:trainer_app/routing/app_router.dart';
 
-part 'providers.g.dart';
+part 'notification_service.g.dart';
 
 class NotificationService {
   static final _notificationPlugin = FlutterLocalNotificationsPlugin();
@@ -30,9 +30,8 @@ class NotificationService {
     await _notificationPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
       if (response.payload != null) {
-        GoRouter.of(context).pushNamed(AppRoute.chat.name, pathParameters: {
-          'flowString': response.payload!
-        });
+        GoRouter.of(context).pushNamed(AppRoute.chat.name,
+            pathParameters: {'flowString': response.payload!});
       }
     },
         onDidReceiveBackgroundNotificationResponse:
@@ -65,7 +64,7 @@ class NotificationService {
       0, // Unique id for each notification
       'Reminder',
       'It’s time for your check-in! 1 MINUTE CHECK IN',
-     _nextInstanceOfSunday(),
+      _nextInstanceOfSunday(),
       const NotificationDetails(
         android:
             AndroidNotificationDetails('checkin_reminder', 'Check-In Reminder'),
@@ -79,16 +78,23 @@ class NotificationService {
     );
   }
 
-  Future<void> checkAndScheduleNotification() async {
-  final prefs = await SharedPreferences.getInstance();
-  final isNotificationScheduled = prefs.getBool('isNotificationScheduled') ?? false;
+  Future<List<PendingNotificationRequest>> getScheduledNotifications() async {
+    List<PendingNotificationRequest> pendingNotificationRequests =
+        await _notificationPlugin.pendingNotificationRequests();
 
-  if (!isNotificationScheduled) {
-    await scheduleCheckIn();
-    await prefs.setBool('isNotificationScheduled', true);
+    return pendingNotificationRequests;
   }
-}
 
+  Future<void> checkAndScheduleNotification() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isNotificationScheduled =
+        prefs.getBool('isNotificationScheduled') ?? false;
+
+    if (!isNotificationScheduled) {
+      await scheduleCheckIn();
+      await prefs.setBool('isNotificationScheduled', true);
+    }
+  }
 
   tz.TZDateTime _nextInstanceInMinutes(int minutes) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -96,11 +102,12 @@ class NotificationService {
   }
 
   tz.TZDateTime _nextInstanceOfSunday() {
-  final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-  int daysToAdd = (DateTime.sunday - now.weekday) % DateTime.daysPerWeek;
-  final tz.TZDateTime nextSunday = now.add(Duration(days: daysToAdd));
-  return tz.TZDateTime(tz.local, nextSunday.year, nextSunday.month, nextSunday.day, 9, 0);
-}
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    int daysToAdd = (DateTime.sunday - now.weekday) % DateTime.daysPerWeek;
+    final tz.TZDateTime nextSunday = now.add(Duration(days: daysToAdd));
+    return tz.TZDateTime(
+        tz.local, nextSunday.year, nextSunday.month, nextSunday.day, 9, 0);
+  }
 }
 
 @Riverpod(keepAlive: true)

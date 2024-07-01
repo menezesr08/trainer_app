@@ -1,27 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
-
-part 'plan_repository.g.dart';
 
 class PlanRepository {
   PlanRepository();
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
-  void addPlanToFirestore(Plan plan, String userId,
-      List<Workout> workoutsToSave) async {
+  void addPlanToFirestore(
+      Plan plan, String userId, List<Workout> workoutsToSave) async {
     final id = plan.id ?? await generateUniqueId();
 
     Plan newOrUpdatedPlan = Plan(
-      id: id,
-      name: plan.name,
-      workouts: workoutsToSave,
-      scheduledAt: plan.scheduledAt,
-      isRecurring: plan.isRecurring,
-      recurringType: plan.recurringType
-    );
+        id: id,
+        name: plan.name,
+        workouts: workoutsToSave,
+        scheduledAt: plan.scheduledAt,
+        isRecurring: plan.isRecurring,
+        recurringType: plan.recurringType);
     try {
       await _firestore
           .collection('users')
@@ -95,14 +91,4 @@ class PlanRepository {
       return Stream.value([]); // Return an empty stream in case of error
     }
   }
-}
-
-final getPlansStream = StreamProvider.autoDispose.family<List<Plan>, String>((ref, userId) {
-  final plans = ref.watch(planRepositoryProvider);
-  return plans.getPlansFromFirestore(userId);
-});
-
-@Riverpod(keepAlive: true)
-PlanRepository planRepository(PlanRepositoryRef ref) {
-  return PlanRepository();
 }

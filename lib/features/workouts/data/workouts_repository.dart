@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/completed_workout.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 
 part 'workouts_repository.g.dart';
 

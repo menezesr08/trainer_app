@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/presentation/sign_in_screen.dart';
 import 'package:trainer_app/features/chat/presentation/chat.dart';
 import 'package:trainer_app/features/insights/presentation/individual_workout_insights.dart';
@@ -19,8 +18,9 @@ import 'package:trainer_app/features/profile/presentation/update_profile.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/presentation/completed_a_workout.dart';
 import 'package:trainer_app/features/insights/presentation/insights.dart';
-import 'package:trainer_app/pages/leaderboard.dart';
+
 import 'package:trainer_app/features/profile/presentation/profile.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 import 'package:trainer_app/routing/app_startup.dart';
 import 'package:trainer_app/routing/go_router_refresh_stream.dart';
 import 'package:trainer_app/routing/not_found_screen.dart';
@@ -217,8 +217,8 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                     path: '/leaderboard',
                     name: AppRoute.leaderboard.name,
-                    pageBuilder: (context, state) => const NoTransitionPage(
-                      child: Leaderboard(),
+                    pageBuilder: (context, state) =>  NoTransitionPage(
+                      child: Container(),
                     ),
                   ),
                 ]),

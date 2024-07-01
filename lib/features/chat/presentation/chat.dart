@@ -10,7 +10,7 @@ import 'package:trainer_app/features/chat/presentation/chat_widgets/youtube_vide
 import 'package:trainer_app/features/chat/presentation/question_builders.dart';
 import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
 import 'package:trainer_app/features/plans/domain/flow.dart';
-import 'package:trainer_app/features/user/data/user_repository.dart';
+import 'package:trainer_app/providers/user_providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/common_widgets/numeric_input_field.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
-import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/plans/presentation/plans_providers.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 import 'package:trainer_app/features/workouts/extensions.dart';
+import 'package:trainer_app/providers/plan_providers.dart';
+import 'package:trainer_app/providers/user_providers.dart';
 
 class PlanDetails extends ConsumerStatefulWidget {
   const PlanDetails({

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/profile/presentation/completed_workout_card.dart';
 import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
 import 'package:trainer_app/features/workouts/domain/completed_workout.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 
 class CompletedWorkoutsList extends ConsumerWidget {
   const CompletedWorkoutsList({super.key});

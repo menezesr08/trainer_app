@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/presentation/plan_card.dart';
-import 'package:trainer_app/providers.dart';
+import 'package:trainer_app/providers/plan_providers.dart';
+import 'package:trainer_app/providers/user_providers.dart';
+import 'package:trainer_app/services/notification_service.dart';
 
 void showAlert(BuildContext context) {
   showDialog(
@@ -23,6 +25,7 @@ class Plans extends ConsumerStatefulWidget {
 }
 
 class _ConsumerPlansState extends ConsumerState<Plans> {
+  List<PendingNotificationRequest> _pendingNotifications = [];
   void deletePlan(
     PlanRepository plansRepo,
     int planId,
@@ -34,6 +37,50 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> showNotification() async {
+    final notificationProvider = ref.read(notificationServiceProvider);
+    final notifications =
+        await notificationProvider.getScheduledNotifications();
+
+    setState(() {
+      _pendingNotifications = notifications;
+    });
+  }
+
+  void _showScheduledNotificationsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Scheduled Notifications"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _pendingNotifications.length,
+              itemBuilder: (context, index) {
+                final notification = _pendingNotifications[index];
+                return ListTile(
+                  title: Text(notification.title ?? "No Title"),
+                  subtitle: Text(notification.body ?? "No Body"),
+                  trailing: Text(notification.id.toString()),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -96,12 +143,19 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                       ),
                     )
                     .toList(),
-          
                 ElevatedButton(
-                    onPressed: () {
-                      GoRouter.of(context).push('/chat/standard');
-                    },
-                    child: const Text('Click to chat')),
+                  onPressed: () {
+                    GoRouter.of(context).push('/chat/standard');
+                  },
+                  child: const Text('Click to chat'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await showNotification();
+                    _showScheduledNotificationsDialog();
+                  },
+                  child: const Text("Show Scheduled Notifications"),
+                ),
               ],
             ),
           );

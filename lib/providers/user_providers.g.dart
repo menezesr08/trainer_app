@@ -1,11 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'firebase_auth_repository.dart';
+part of 'user_providers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
+String _$userIdHash() => r'64e867354d9eed031d10d7b680afd34dd892575c';
+
+/// See also [userId].
+@ProviderFor(userId)
+final userIdProvider = Provider<String?>.internal(
+  userId,
+  name: r'userIdProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$userIdHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef UserIdRef = ProviderRef<String?>;
 String _$createUserHash() => r'0b3f046f328609b1ef14e4c97525830cc374afe3';
 
 /// Copied from Dart SDK
@@ -155,63 +169,34 @@ class _CreateUserProviderElement extends FutureProviderElement<void>
   UserParams get params => (origin as CreateUserProvider).params;
 }
 
-String _$userIdHash() => r'99c9eb91a2c26dcd73bbf96711093a81e5b725a7';
+String _$userRepositoryHash() => r'775f0a0cbfe43fcc5b0fbeec8ecf75a7b4fd0859';
 
-/// See also [userId].
-@ProviderFor(userId)
-final userIdProvider = AutoDisposeProvider<String?>.internal(
-  userId,
-  name: r'userIdProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$userIdHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef UserIdRef = AutoDisposeProviderRef<String?>;
-String _$firebaseAuthHash() => r'46c40b7c5cf8ab936c0daa96a6af106bd2ae5d51';
-
-/// See also [firebaseAuth].
-@ProviderFor(firebaseAuth)
-final firebaseAuthProvider = Provider<FirebaseAuth>.internal(
-  firebaseAuth,
-  name: r'firebaseAuthProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$firebaseAuthHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef FirebaseAuthRef = ProviderRef<FirebaseAuth>;
-String _$authRepositoryHash() => r'3871275ded2762a0e529629be71e890bfd3bd7ad';
-
-/// See also [authRepository].
-@ProviderFor(authRepository)
-final authRepositoryProvider = Provider<AuthRepository>.internal(
-  authRepository,
-  name: r'authRepositoryProvider',
+/// See also [userRepository].
+@ProviderFor(userRepository)
+final userRepositoryProvider = Provider<UserRepository>.internal(
+  userRepository,
+  name: r'userRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$authRepositoryHash,
+      : _$userRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef AuthRepositoryRef = ProviderRef<AuthRepository>;
-String _$authStateChangesHash() => r'af0a0185c59bf3c1ad8a9e041075517b3a2dcc31';
+typedef UserRepositoryRef = ProviderRef<UserRepository>;
+String _$getUserHash() => r'258f89f4aa2f010d30115d6422e2f49d31a73675';
 
-/// See also [authStateChanges].
-@ProviderFor(authStateChanges)
-final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
-  authStateChanges,
-  name: r'authStateChangesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authStateChangesHash,
+/// See also [getUser].
+@ProviderFor(getUser)
+final getUserProvider = FutureProvider<AppUser?>.internal(
+  getUser,
+  name: r'getUserProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$getUserHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
+typedef GetUserRef = FutureProviderRef<AppUser?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

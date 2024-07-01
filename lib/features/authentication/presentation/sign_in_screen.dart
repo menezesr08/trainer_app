@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/authentication/domain/create_user_params.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
+import 'package:trainer_app/providers/user_providers.dart';
 
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({super.key});

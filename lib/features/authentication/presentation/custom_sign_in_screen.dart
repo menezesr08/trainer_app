@@ -2,7 +2,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainer_app/constants/app_sizes.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 
 import 'auth_providers.dart';
 

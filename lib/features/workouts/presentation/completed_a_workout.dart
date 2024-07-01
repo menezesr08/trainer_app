@@ -2,7 +2,6 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
 import 'package:trainer_app/features/workouts/domain/completed_workout.dart';
@@ -10,6 +9,7 @@ import 'package:trainer_app/features/workouts/domain/set.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
 import 'package:trainer_app/features/workouts/presentation/workout_card.dart';
 import 'package:trainer_app/features/workouts/presentation/workout_providers.dart';
+import 'package:trainer_app/providers/user_providers.dart';
 
 class CompleteAWorkout extends ConsumerStatefulWidget {
   const CompleteAWorkout({

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/common_widgets/primary_button.dart';
 import 'package:trainer_app/constants/app_sizes.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 import 'package:trainer_app/routing/app_router.dart';
 
 class EmptyPlaceholderWidget extends ConsumerWidget {

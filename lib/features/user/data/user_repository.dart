@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:trainer_app/features/authentication/data/firebase_auth_repository.dart';
-import 'package:trainer_app/features/profile/providers.dart';
+
 import 'package:trainer_app/features/user/domain/app_user.dart';
-part 'user_repository.g.dart';
+
 
 class UserRepository {
   UserRepository();
@@ -29,21 +27,5 @@ class UserRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
-FirebaseFirestore firestore(FirestoreRef ref) {
-  return FirebaseFirestore.instance;
-}
 
-@Riverpod(keepAlive: true)
-UserRepository userRepository(UserRepositoryRef ref) {
-  return UserRepository();
-}
 
-@Riverpod(keepAlive: true)
-Future<AppUser?> getUser(GetUserRef ref) {
-  final userId = ref.watch(authRepositoryProvider).currentUser!.uid;
-  final userRepo = ref.watch(userRepositoryProvider);
-
-  ref.watch(profileRefreshProvider);
-  return userRepo.getUser(userId);
-}

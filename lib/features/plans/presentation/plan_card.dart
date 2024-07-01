@@ -57,6 +57,30 @@ class PlanCard extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (plan.isRecurring != null && plan.isRecurring!)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, right: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 104, 3, 122),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
+                          padding: const EdgeInsets.only(right: 5, left: 5),
+                          child: const Text(
+                            'Recurring',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                  ],
+                ),
                 ListTile(
                     leading: const Icon(
                       Icons.fitness_center,
@@ -82,7 +106,7 @@ class PlanCard extends StatelessWidget {
           ...plan.workouts.map(
             (e) => PlanDetailCard(w: e),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           )
         ],

@@ -1,26 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'providers.dart';
+part of 'plan_providers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notificationServiceHash() =>
-    r'015117d47fe71bf44664bf802ad1290b1e2492d4';
+String _$planRepositoryHash() => r'b336537a06bea026dde1b68a842a7dd10168a95e';
 
-/// See also [notificationService].
-@ProviderFor(notificationService)
-final notificationServiceProvider = Provider<NotificationService>.internal(
-  notificationService,
-  name: r'notificationServiceProvider',
+/// See also [planRepository].
+@ProviderFor(planRepository)
+final planRepositoryProvider = Provider<PlanRepository>.internal(
+  planRepository,
+  name: r'planRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$notificationServiceHash,
+      : _$planRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef NotificationServiceRef = ProviderRef<NotificationService>;
+typedef PlanRepositoryRef = ProviderRef<PlanRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
