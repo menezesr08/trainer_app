@@ -1,11 +1,13 @@
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trainer_app/features/chat/model/model.dart';
+import 'package:trainer_app/features/chat/model/chat_message.dart';
 import 'package:trainer_app/features/chat/data/chat_provider.dart';
+import 'package:trainer_app/features/chat/model/chat_state.dart';
 import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
 import 'package:trainer_app/features/chat/presentation/ratings_bar.dart';
 import 'package:trainer_app/features/chat/presentation/selectable_options.dart';
+import 'package:trainer_app/providers/chat_provider.dart';
 
 class QuestionBuilders {
   final WidgetRef ref;

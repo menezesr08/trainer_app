@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:trainer_app/features/chat/data/chat_provider.dart';
-import 'package:trainer_app/features/chat/model/model.dart';
+import 'package:trainer_app/features/chat/model/chat_message.dart';
+import 'package:trainer_app/features/chat/model/chat_state.dart';
 import 'package:trainer_app/features/chat/presentation/chat_widgets/youtube_video.dart';
 import 'package:trainer_app/features/chat/presentation/question_builders.dart';
 import 'package:trainer_app/features/plans/domain/chat_flows_manager.dart';
 import 'package:trainer_app/features/plans/domain/flow.dart';
+import 'package:trainer_app/providers/chat_provider.dart';
 import 'package:trainer_app/providers/user_providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
