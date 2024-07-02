@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:trainer_app/features/plans/domain/plan.dart';
 
 import 'package:trainer_app/features/plans/presentation/plans_providers.dart';
-import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
 import 'package:trainer_app/features/workouts/domain/base_workout.dart';
 import 'package:trainer_app/features/workouts/domain/workout.dart';
+import 'package:trainer_app/providers/workouts_providers.dart';
 
 class CreatePlan extends ConsumerStatefulWidget {
   const CreatePlan({super.key});

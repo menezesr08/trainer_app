@@ -169,7 +169,7 @@ class _CreateUserProviderElement extends FutureProviderElement<void>
   UserParams get params => (origin as CreateUserProvider).params;
 }
 
-String _$userRepositoryHash() => r'775f0a0cbfe43fcc5b0fbeec8ecf75a7b4fd0859';
+String _$userRepositoryHash() => r'7a0848ed3996488057eb5974babf743caf7059e9';
 
 /// See also [userRepository].
 @ProviderFor(userRepository)
@@ -184,7 +184,7 @@ final userRepositoryProvider = Provider<UserRepository>.internal(
 );
 
 typedef UserRepositoryRef = ProviderRef<UserRepository>;
-String _$getUserHash() => r'258f89f4aa2f010d30115d6422e2f49d31a73675';
+String _$getUserHash() => r'7b0f6720efbc72220f6bea8e092a8c8a6278d151';
 
 /// See also [getUser].
 @ProviderFor(getUser)

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trainer_app/common_widgets/option_row.dart';
-import 'package:trainer_app/features/workouts/data/workouts_repository.dart';
+import 'package:trainer_app/providers/workouts_providers.dart';
 
 class IndividualWorkoutOptions extends ConsumerWidget {
   const IndividualWorkoutOptions({super.key});
