@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trainer_app/features/profile/constants.dart';
+import 'package:trainer_app/constants/enums.dart';
 import 'package:trainer_app/features/user/domain/app_user.dart';
 import 'package:trainer_app/providers/profile_providers.dart';
 import 'package:trainer_app/providers/user_providers.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trainer_app/features/authentication/domain/create_user_params.dart';
 import 'package:trainer_app/providers/auth_providers.dart';
 import 'package:trainer_app/providers/user_providers.dart';
@@ -120,6 +121,7 @@ class SignInScreen extends ConsumerWidget {
 
                         // Read the provider with the given parameters
                         ref.read(createUserProvider(params));
+                        GoRouter.of(context).push('/onboarding');
                       }
                     },
                     child: Text(signInState.selectedOption == 'Login'

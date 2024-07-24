@@ -86,15 +86,14 @@ GoRouter goRouter(GoRouterRef ref) {
       }
 
       final isLoggedIn = authRepository.currentUser != null;
+      print('Path is: ');
+      print(path);
       if (isLoggedIn) {
-        if (path.startsWith('/startup') ||
-            path.startsWith('/onboarding') ||
-            path.startsWith('/signIn')) {
+        if (path.startsWith('/startup') || path.startsWith('/signIn')) {
           return '/plans';
         }
       } else {
         if (path.startsWith('/startup') ||
-            path.startsWith('/onboarding') ||
             path.startsWith('/plans') ||
             path.startsWith('/account')) {
           return '/signIn';
@@ -217,7 +216,7 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                     path: '/leaderboard',
                     name: AppRoute.leaderboard.name,
-                    pageBuilder: (context, state) =>  NoTransitionPage(
+                    pageBuilder: (context, state) => NoTransitionPage(
                       child: Container(),
                     ),
                   ),

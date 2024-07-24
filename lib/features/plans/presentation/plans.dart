@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trainer_app/features/authentication/presentation/auth_providers.dart';
 import 'package:trainer_app/features/plans/data/plan_repository.dart';
 import 'package:trainer_app/features/plans/presentation/plan_card.dart';
+import 'package:trainer_app/providers/auth_providers.dart';
 import 'package:trainer_app/providers/plan_providers.dart';
 import 'package:trainer_app/providers/user_providers.dart';
 import 'package:trainer_app/services/notification_service.dart';
@@ -90,6 +92,7 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
     final userId = ref.watch(userIdProvider);
     final plansProvider = ref.watch(planRepositoryProvider);
     final notificationProvider = ref.read(notificationServiceProvider);
+    final authProvider = ref.read(authRepositoryProvider);
     notificationProvider.initialize(context);
     notificationProvider.checkAndScheduleNotification();
 
@@ -113,9 +116,9 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                 const SizedBox(
                   height: 50,
                 ),
-                const Row(
+                Row(
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Text(
                         'Your Plans',
@@ -125,8 +128,13 @@ class _ConsumerPlansState extends ConsumerState<Plans> {
                         ),
                       ),
                     ),
-                    Spacer(),
-                    Padding(
+                    const Spacer(),
+                    TextButton(
+                        onPressed: () async {
+                          await authProvider.signOut();
+                        },
+                        child: const Text('Sign out')),
+                    const Padding(
                       padding: EdgeInsets.only(right: 8.0),
                       child: Icon(Icons.search),
                     )
